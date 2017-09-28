@@ -6,8 +6,6 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	// "github.com/kikiyou/agent/collector"
-	// "github.com/kikiyou/agent/collector"
 )
 
 type Collector interface {
@@ -15,43 +13,7 @@ type Collector interface {
 	Update() (res interface{}, err error)
 }
 
-// // // Implements Collector.
-// type NodeCollector struct {
-// 	collectors map[string]Collector
-// }
-
-var Factories = make(map[string]func(Config) (Collector, error))
-
-// Implements Collector.
-// func Collect(ch chan<- prometheus.Metric) {
-// 	wg := sync.WaitGroup{}
-// 	wg.Add(len(Factories))
-// 	for name, c := range Factories {
-// 		c.Update(ch)
-// 		// go func(name string, c Collector) {
-// 		// 	// Execute(name, c, ch)
-// 		// 	wg.Done()
-// 		// }(name, c)
-// 	}
-// 	wg.Wait()
-// 	// scrapeDurations.Collect(ch)
-// }
-
-// func Execute(name string, c Collector, ch chan<- prometheus.Metric) {
-// 	// begin := time.Now()
-// 	err := c.Update(ch)
-// 	// duration := time.Since(begin)
-// 	var result string
-
-// 	// if err != nil {
-// 	// 	log.Printf("ERROR: %s failed after %fs: %s", name, duration.Seconds(), err)
-// 	// 	result = "error"
-// 	// } else {
-// 	// 	log.Printf("OK: %s success after %fs.", name, duration.Seconds())
-// 	// 	result = "success"
-// 	// }
-// 	// // scrapeDurations.WithLabelValues(name, result).Observe(duration.Seconds())
-// }
+var Factories = make(map[string]func() (Collector, error))
 
 const Namespace = "node"
 
@@ -77,11 +39,11 @@ func ModulesRoutes(c *gin.Context) {
 			println(k)
 
 			fn, ok := Factories[module]
-			config := &Config{}
+			// config := &Config{}
 			if !ok {
 				log.Printf("Collector '%s' not available", module)
 			}
-			cf, err := fn(*config)
+			cf, err := fn()
 			fmt.Println(err)
 			// cf.Update()
 			cc, _ := cf.Update()

@@ -25,7 +25,7 @@ var (
 )
 
 type loadavgCollector struct {
-	config Config
+	config string
 }
 
 func init() {
@@ -34,9 +34,10 @@ func init() {
 
 // Takes a config struct and prometheus registry and returns a new Collector exposing
 // load, seconds since last login and a list of tags as specified by config.
-func NewLoadavgCollector(config Config) (Collector, error) {
+func NewLoadavgCollector() (Collector, error) {
+	// config := &Config{}
 	c := loadavgCollector{
-		config: config,
+		config: "ccc",
 	}
 	return &c, nil
 }

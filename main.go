@@ -9,20 +9,10 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/kikiyou/agent/collector"
-	// "github.com/prometheus/node_exporter/collector"
 )
 
 var router *gin.Engine
 
-// func InitializeRoutes() {
-
-// 	// Use the setUserStatus middleware for every route to set a flag
-// 	// indicating whether the request was from an authenticated user or not
-// 	router.Use(setUserStatus())
-
-// 	// Handle the index route
-// 	router.GET("/", showIndexPage)
-// }
 var (
 	// configFile        = flag.String("config", "node_exporter.conf", "config file.")
 	// memProfile        = flag.String("memprofile", "", "write memory profile to this file")
@@ -30,46 +20,18 @@ var (
 	enabledCollectors = flag.String("enabledCollectors", "user_accounts,current_ram", "comma-seperated list of collectors to use")
 	printCollectors   = flag.Bool("printCollectors", true, "If true, print available collectors and exit")
 
-	// collectorLabelNames = []string{"collector", "result"}
 
-	// scrapeDurations = prometheus.NewSummaryVec(
-	// 	prometheus.SummaryOpts{
-	// 		Namespace: collector.Namespace,
-	// 		Subsystem: subsystem,
-	// 		Name:      "scrape_duration_seconds",
-	// 		Help:      "node_exporter: Duration of a scrape job.",
-	// 	},
-	// 	collectorLabelNames,
-	// )
-)
-
-// // Implements Collector.
-// type NodeCollector struct {
-// 	collectors map[string]modules.Collector
-// }
-// func getConfig(file string) (*collector.Config, error) {
-// 	config := &collector.Config{}
-// 	glog.Infof("Reading config %s", *configFile)
-// 	bytes, err := ioutil.ReadFile(*configFile)
-// 	if err != nil {
-// 		return nil, err
-// 	}
-// 	return config, json.Unmarshal(bytes, &config)
-// }
 
 func loadCollectors() (map[string]collector.Collector, error) {
 	collectors := map[string]collector.Collector{}
-	// config, err := getConfig(file)
-	// if err != nil {
-	// 	log.Fatalf("Couldn't read config %s: %s", file, err)
-	// }
+
 	for _, name := range strings.Split(*enabledCollectors, ",") {
 		fn, ok := collector.Factories[name]
-		config := &collector.Config{}
+		// config := &collector.Config{}
 		if !ok {
 			log.Fatalf("Collector '%s' not available", name)
 		}
-		c, err := fn(*config)
+		c, err := fn()
 		if err != nil {
 			return nil, err
 		}

@@ -8,7 +8,7 @@ import (
 )
 
 func init() {
-	Factories["current_ram"] = Newcurrent_ramCollector
+	Factories["current_ram"] = NewCurrentRamCollector
 }
 
 type current_ram struct {
@@ -21,17 +21,12 @@ func (m current_ram) String() string {
 	s, _ := json.Marshal(m)
 	return string(s)
 }
-func Newcurrent_ramCollector(config Config) (Collector, error) {
-	fmt.Println(config)
-	// c := current_ram{}
+func NewCurrentRamCollector() (Collector, error) {
 	var c *current_ram = new(current_ram)
 	return c, nil
 }
 
 func Newcurrent_ram(Total uint64, Used uint64, Available uint64) *current_ram {
-	// if fd < 0 {
-	// 	return nil
-	// }
 
 	return &current_ram{Total, Used, Available}
 }
