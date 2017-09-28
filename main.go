@@ -5,10 +5,10 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/open-falcon/agent/cron"
-	"github.com/open-falcon/agent/funcs"
-	"github.com/open-falcon/agent/g"
-	"github.com/open-falcon/agent/http"
+	"github.com/kikiyou/agent/cron"
+	"github.com/kikiyou/agent/funcs"
+	"github.com/kikiyou/agent/g"
+	"github.com/kikiyou/agent/http"
 )
 
 func main() {
