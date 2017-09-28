@@ -12,8 +12,8 @@ import (
 	"github.com/toolkits/file"
 	"github.com/toolkits/sys"
 
-	"github.com/open-falcon/agent/g"
-	"github.com/open-falcon/common/model"
+	"github.com/kikiyou/agent/g"
+	"github.com/kikiyou/common/model"
 )
 
 type PluginScheduler struct {

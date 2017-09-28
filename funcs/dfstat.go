@@ -2,7 +2,7 @@ package funcs
 
 import (
 	"fmt"
-	"github.com/open-falcon/common/model"
+	"github.com/kikiyou/common/model"
 	"github.com/toolkits/nux"
 	"log"
 )

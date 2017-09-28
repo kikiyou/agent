@@ -2,8 +2,8 @@ package cron
 
 import (
 	"fmt"
-	"github.com/open-falcon/agent/g"
-	"github.com/open-falcon/common/model"
+	"github.com/kikiyou/agent/g"
+	"github.com/kikiyou/common/model"
 	"log"
 	"time"
 )

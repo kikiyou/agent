@@ -2,7 +2,7 @@ package http
 
 import (
 	"encoding/json"
-	"github.com/open-falcon/agent/g"
+	"github.com/kikiyou/agent/g"
 	"log"
 	"net/http"
 	_ "net/http/pprof"

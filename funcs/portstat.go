@@ -2,8 +2,8 @@ package funcs
 
 import (
 	"fmt"
-	"github.com/open-falcon/agent/g"
-	"github.com/open-falcon/common/model"
+	"github.com/kikiyou/agent/g"
+	"github.com/kikiyou/common/model"
 	"github.com/toolkits/nux"
 	"github.com/toolkits/slice"
 	"log"
