@@ -8,6 +8,9 @@ import (
 	"sync"
 	"time"
 
+	// "github.com/kikiyou/agent/collector"
+	// "github.com/kikiyou/agent/collector"
+
 	"github.com/kikiyou/common/model"
 	"github.com/toolkits/slice"
 )
@@ -173,3 +176,52 @@ func IsTrustable(remoteAddr string) bool {
 
 	return slice.ContainsString(TrustableIps(), ip)
 }
+
+//////////////////////////
+// // Implements Collector.
+// type NodeCollector struct {
+// 	collectors map[string]collector.Collector
+// }
+
+// // Implements Collector.
+// func (n NodeCollector) Describe(ch chan<- *prometheus.Desc) {
+// 	scrapeDurations.Describe(ch)
+// }
+
+// Implements Collector.
+// func (n NodeCollector) Collect(ch chan<- prometheus.Metric) {
+// 	wg := sync.WaitGroup{}
+// 	wg.Add(len(n.collectors))
+// 	for name, c := range n.collectors {
+// 		go func(name string, c collector.Collector) {
+// 			Execute(name, c, ch)
+// 			wg.Done()
+// 		}(name, c)
+// 	}
+// 	wg.Wait()
+// 	// scrapeDurations.Collect(ch)
+// }
+
+// func Execute(name string, c collector.Collector, ch chan<- prometheus.Metric) {
+// 	begin := time.Now()
+// 	err := c.Update(ch)
+// 	duration := time.Since(begin)
+// 	var result string
+
+// 	if err != nil {
+// 		glog.Infof("ERROR: %s failed after %fs: %s", name, duration.Seconds(), err)
+// 		result = "error"
+// 	} else {
+// 		glog.Infof("OK: %s success after %fs.", name, duration.Seconds())
+// 		result = "success"
+// 	}
+// 	scrapeDurations.WithLabelValues(name, result).Observe(duration.Seconds())
+// }
+
+// var (
+// 	NodeCollector NodeCollector
+// )
+
+// func RegisterNodeCollector(n NodeCollector) {
+// 	NodeCollector = n
+// }
