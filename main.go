@@ -9,6 +9,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/kikiyou/agent/collector"
+	// "github.com/prometheus/node_exporter/collector"
 )
 
 var router *gin.Engine
@@ -19,15 +20,13 @@ var (
 	// listeningAddress  = flag.String("listen", ":8080", "address to listen on")
 	enabledCollectors = flag.String("enabledCollectors", "user_accounts,current_ram", "comma-seperated list of collectors to use")
 	printCollectors   = flag.Bool("printCollectors", true, "If true, print available collectors and exit")
-
-
+)
 
 func loadCollectors() (map[string]collector.Collector, error) {
 	collectors := map[string]collector.Collector{}
 
 	for _, name := range strings.Split(*enabledCollectors, ",") {
 		fn, ok := collector.Factories[name]
-		// config := &collector.Config{}
 		if !ok {
 			log.Fatalf("Collector '%s' not available", name)
 		}
