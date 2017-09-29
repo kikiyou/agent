@@ -2,7 +2,6 @@ package main
 
 import (
 	"flag"
-	"fmt"
 	"log"
 	"net/http"
 	"strings"
@@ -18,7 +17,7 @@ var (
 	// configFile        = flag.String("config", "node_exporter.conf", "config file.")
 	// memProfile        = flag.String("memprofile", "", "write memory profile to this file")
 	// listeningAddress  = flag.String("listen", ":8080", "address to listen on")
-	enabledCollectors = flag.String("enabledCollectors", "user_accounts,current_ram", "comma-seperated list of collectors to use")
+	enabledCollectors = flag.String("enabledCollectors", "user_accounts,current_ram,ram_intensive_processes,cpu_intensive_processes,disk_partitions,load_avg", "comma-seperated list of collectors to use")
 	printCollectors   = flag.Bool("printCollectors", true, "If true, print available collectors and exit")
 )
 
@@ -43,9 +42,9 @@ func main() {
 	flag.Parse()
 	// printCollectors = "888"
 	if *printCollectors {
-		fmt.Printf("Available collectors:\n")
+		log.Printf("Available collectors:\n")
 		for n, _ := range collector.Factories {
-			fmt.Printf(" - %s\n", n)
+			log.Printf(" - %s\n", n)
 		}
 		// return
 	}
@@ -74,8 +73,8 @@ func main() {
 	for n, _ := range collectors {
 		log.Printf(" - %s", n)
 	}
-	fmt.Println("ccccccccccccccccccccc")
-	fmt.Println(collectors)
+	log.Println("ccccccccccccccccccccc")
+	log.Println(collectors)
 	// MakeNodeCollector := collectors
 	// collector.RegisterNodeCollector(n)
 
