@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"log"
 	"sort"
+	"strconv"
 
 	"github.com/shirou/gopsutil/process"
 )
@@ -13,12 +14,12 @@ func init() {
 }
 
 type ram_intensive_processes struct {
-	Pid  int32   `json:"pid"`
-	User string  `json:"user"`
-	Mem  float32 `json:"mem%"`
-	Rss  uint64  `json:"rss"`
-	Vsz  uint64  `json:"vsz"`
-	Cmd  string  `json:"cmd"`
+	Pid  int32  `json:"pid"`
+	User string `json:"user"`
+	Mem  string `json:"mem%"`
+	Rss  uint64 `json:"rss"`
+	Vsz  uint64 `json:"vsz"`
+	Cmd  string `json:"cmd"`
 }
 type ram_intensive_processesSlice []ram_intensive_processes
 
@@ -43,7 +44,7 @@ func NewCollector_ram_intensive_processes() (Collector, error) {
 	return c, nil
 }
 
-func New_ram_intensive_processes(Pid int32, User string, Mem float32, Rss uint64, Vsz uint64, Cmd string) *ram_intensive_processes {
+func New_ram_intensive_processes(Pid int32, User string, Mem string, Rss uint64, Vsz uint64, Cmd string) *ram_intensive_processes {
 
 	return &ram_intensive_processes{Pid, User, Mem, Rss, Vsz, Cmd}
 }
@@ -100,7 +101,7 @@ func get_ram_intensive_processes() *ram_intensive_processesSlice {
 		vms := meminfo.VMS / t
 
 		// log.Println("pid:", members[i].Id, "user:", user, "mem:", mem, "rss:", rss, "vms:", vms, "cmd:", cmd)
-		s_ram_intensive_processesSlice = append(s_ram_intensive_processesSlice, ram_intensive_processes{members[i].Id, user, mem, rss, vms, cmd})
+		s_ram_intensive_processesSlice = append(s_ram_intensive_processesSlice, ram_intensive_processes{members[i].Id, user, strconv.FormatFloat(float64(mem), 'f', 1, 32), rss, vms, cmd})
 	}
 	return &s_ram_intensive_processesSlice
 }
