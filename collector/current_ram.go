@@ -41,8 +41,8 @@ func (c *current_ram) Update() (res interface{}, err error) {
 	}
 	v, _ := mem.VirtualMemory()
 	var t uint64 = 1024 * 1024
-	current_ram := &current_ram{v.Total / t, v.Used / t, v.Free / t}
-	log.Printf("Total: %v, Free:%v, UsedPercent:%f%%\n", v.Total, v.Free, v.UsedPercent)
+	current_ram := &current_ram{v.Total / t, v.Used / t, v.Available / t}
+	log.Printf("Total: %v, Free:%v, UsedPercent:%f%%\n", v.Total, v.Available, v.UsedPercent)
 
 	// load1.Collect(ch)
 	return current_ram, nil

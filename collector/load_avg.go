@@ -3,6 +3,7 @@ package collector
 import (
 	"encoding/json"
 	"log"
+	"runtime"
 
 	"github.com/shirou/gopsutil/load"
 )
@@ -41,9 +42,12 @@ func (c *laod_avg) Update() (res interface{}, err error) {
 	if err != nil {
 		log.Fatalln("load_avg:,", err)
 	}
+	// var NumCPU float64
+	NumCPU := runtime.NumCPU()
+
 	return laod_avg{
-		Load1:  loads.Load1,
-		Load5:  loads.Load5,
-		Load15: loads.Load15,
+		Load1:  loads.Load1 * 100 / float64(NumCPU),
+		Load5:  loads.Load5 * 100 / float64(NumCPU),
+		Load15: loads.Load15 * 100 / float64(NumCPU),
 	}, nil
 }

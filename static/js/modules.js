@@ -101,9 +101,9 @@
                         name: '空闲',
                         generate: function(serverResponseData) {
 
-                            var freeRam = humanizeRam(serverResponseData.free);
+                            var availableRam = humanizeRam(serverResponseData.available);
                             var totalRam = humanizeRam(serverResponseData.total);
-                            return freeRam + ' of ' + totalRam;
+                            return availableRam + ' of ' + totalRam;
                         }
                     }
                 ];
