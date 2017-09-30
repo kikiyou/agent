@@ -66,12 +66,14 @@ func get_ram_intensive_processes() *ram_intensive_processesSlice {
 	for _, pid := range pids {
 		proc, err := process.NewProcess(pid)
 		if err != nil {
-			log.Fatalln("Could not create ,", err)
+			continue
+			log.Fatalln("Could not create1 ,", err)
 		}
 
 		mem, err := proc.MemoryPercent()
 		if err != nil {
-			log.Fatalln("Could not create ,", err)
+			continue
+			log.Fatalln("Could not create2 ,", err)
 		}
 		members = append(members, sortMem{pid, mem})
 	}
@@ -81,19 +83,23 @@ func get_ram_intensive_processes() *ram_intensive_processesSlice {
 		// println(members[i].Id)
 		proc, err := process.NewProcess(members[i].Id)
 		if err != nil {
-			log.Fatalln("Could not create ,", err)
+			continue
+			log.Fatalln("Could not create3 ,", err)
 		}
 		user, err := proc.Username()
 		if err != nil {
+			continue
 			log.Fatalln("Could not read process name,", err)
 		}
 		mem := members[i].Mem
 		meminfo, err := proc.MemoryInfo()
 		if err != nil {
+			continue
 			log.Fatalln("Could not read process name,", err)
 		}
 		cmd, err := proc.Name()
 		if err != nil {
+			continue
 			log.Fatalln("Could not read process name,", err)
 		}
 		var t uint64 = 1024 * 1024
