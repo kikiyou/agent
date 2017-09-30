@@ -81,7 +81,7 @@ func main() {
 	initializeRoutes()
 
 	// Start serving the application
-	router.Run(":9090")
+	router.Run(":9999")
 }
 
 // Render one of HTML, JSON or CSV based on the 'Accept' header of the request
