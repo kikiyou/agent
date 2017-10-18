@@ -40,11 +40,11 @@ func ModulesRoutes(c *gin.Context) {
 		return
 	}
 	if fn, ok := Factories[module]; ok {
-		cf, err := fn()
-		fmt.Println(err)
+		cf, _ := fn()
+		// fmt.Println(err)
 		// cf.Update()
 		cc, _ := cf.Update()
-		fmt.Println(cc)
+		// fmt.Println(cc)
 		// c.String(http.StatusOK, "Hello")
 		c.JSON(http.StatusOK, cc)
 		// println("#####vvv####")
@@ -61,37 +61,11 @@ func ModulesRoutes(c *gin.Context) {
 			c.JSON(http.StatusBadRequest, gin.H{"error": "Unable to execute module"})
 			return
 		}
-		fmt.Println(module)
-		fmt.Println(output.String())
-
+		// fmt.Println(module)
+		// fmt.Println(output.String())
 		c.String(http.StatusOK, output.String())
 	}
 
-	// for k, _ := range Factories {
-
-	// 	if module == k {
-	// 		println("#####cccc#####")
-	// 		println(k)
-
-	// 		fn, ok := Factories[module]
-	// 		// config := &Config{}
-	// 		if !ok {
-	// 			log.Printf("Collector '%s' not available", module)
-	// 		}
-	// 		cf, err := fn()
-	// 		fmt.Println(err)
-	// 		// cf.Update()
-	// 		cc, _ := cf.Update()
-	// 		fmt.Println(cc)
-	// 		// c.String(http.StatusOK, "Hello")
-	// 		c.JSON(http.StatusOK, cc)
-	// 		println("#####vvv####")
-	// 		println("#####vvv####")
-	// 		// return
-	// 		// println(k)
-	// 	}
-
-	// }
 }
 
 // func RenderJson(v interface{}) {
