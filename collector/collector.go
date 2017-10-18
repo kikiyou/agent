@@ -1,9 +1,10 @@
 package collector
 
 import (
+	"bytes"
 	"fmt"
-	"log"
 	"net/http"
+	"os/exec"
 
 	"github.com/gin-gonic/gin"
 )
@@ -32,28 +33,65 @@ type Config struct {
 
 func ModulesRoutes(c *gin.Context) {
 	module := c.Query("module")
-	for k, _ := range Factories {
-
-		if module == k {
-			println("#####cccc#####")
-			println(k)
-
-			fn, ok := Factories[module]
-			// config := &Config{}
-			if !ok {
-				log.Printf("Collector '%s' not available", module)
-			}
-			cf, err := fn()
-			fmt.Println(err)
-			// cf.Update()
-			cc, _ := cf.Update()
-			fmt.Println(cc)
-			// c.String(http.StatusOK, "Hello")
-			c.JSON(http.StatusOK, cc)
-			println("#####vvv####")
-		}
-		// println(k)
+	// fmt.Println(module)
+	if module == "" {
+		// fmt.Println("cccc1")
+		c.JSON(http.StatusBadRequest, gin.H{"error": "No module specified, or requested module doesn't exist."})
+		return
 	}
+	if fn, ok := Factories[module]; ok {
+		cf, err := fn()
+		fmt.Println(err)
+		// cf.Update()
+		cc, _ := cf.Update()
+		fmt.Println(cc)
+		// c.String(http.StatusOK, "Hello")
+		c.JSON(http.StatusOK, cc)
+		// println("#####vvv####")
+		// println("#####vvv####")
+
+	} else {
+		fmt.Println(module)
+		cmd := exec.Command("./linux_json_api.sh", module)
+		var output bytes.Buffer
+		cmd.Stdout = &output
+		err := cmd.Run()
+		if err != nil {
+			fmt.Printf("Error executing '%s': %s\n\tScript output: %s\n", module, err.Error(), output.String())
+			c.JSON(http.StatusBadRequest, gin.H{"error": "Unable to execute module"})
+			return
+		}
+		fmt.Println(module)
+		fmt.Println(output.String())
+
+		c.String(http.StatusOK, output.String())
+	}
+
+	// for k, _ := range Factories {
+
+	// 	if module == k {
+	// 		println("#####cccc#####")
+	// 		println(k)
+
+	// 		fn, ok := Factories[module]
+	// 		// config := &Config{}
+	// 		if !ok {
+	// 			log.Printf("Collector '%s' not available", module)
+	// 		}
+	// 		cf, err := fn()
+	// 		fmt.Println(err)
+	// 		// cf.Update()
+	// 		cc, _ := cf.Update()
+	// 		fmt.Println(cc)
+	// 		// c.String(http.StatusOK, "Hello")
+	// 		c.JSON(http.StatusOK, cc)
+	// 		println("#####vvv####")
+	// 		println("#####vvv####")
+	// 		// return
+	// 		// println(k)
+	// 	}
+
+	// }
 }
 
 // func RenderJson(v interface{}) {
