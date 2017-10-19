@@ -44,7 +44,7 @@ WAIT:
 		case err = <-errCh:
 			out = "nil"
 			break WAIT
-		case <-time.After(6 * time.Second):
+		case <-time.After(10 * time.Second):
 			// Kill the process if it takes too long
 			if killErr := cmd.Process.Kill(); killErr != nil {
 				fmt.Printf("%s timeout,failed to kill:%s", module, killErr)

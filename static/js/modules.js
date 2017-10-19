@@ -258,7 +258,7 @@
         },
         {
             name: 'cronHistory',
-            template: '<table-data heading="历史任务" module-name="cron_history" info="Crons which have run recently."></table-data>'
+            template: '<table-data heading="最近10次计划任务" module-name="cron_history" info="Crons which have run recently."></table-data>'
         },
     ];
 

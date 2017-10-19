@@ -126,15 +126,17 @@ cpu_utilization() {
 cron_history() {
 
   grepCmd=$(which grep)
-  cronLog='/var/log/syslog'
-  numberOfLines='50'
+  tailCmd=$(which tail)
+  cronLog='/var/log/cron'
+  numberOfLines='10'
 
   # Month, Day, Time, Hostname, tag, user,
 
-  result=$($grepCmd -m$numberOfLines CRON $cronLog \
+  # result=$($grepCmd -m$numberOfLines CRON $cronLog \
+  result=$($tailCmd -n$numberOfLines $cronLog \
     | awk '{ s = ""; for (i = 6; i <= NF; i++) s = s $i " "; \
-        print "{\"time\" : \"" $1" "$2" "$3 "\"," \
-            "\"user\" : \"" $6 "\"," \
+        print "{\"时间\" : \"" $1" "$2" "$3 "\"," \
+            "\"用户\" : \"" $6 "\"," \
             "\"message\" : \"" $5" "gensub("\"", "\\\\\"", "g", s) "\"" \
           "},"
         }'
