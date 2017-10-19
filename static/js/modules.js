@@ -121,30 +121,6 @@
             }
         };
     }]);
-    angular.module('linuxDash').directive('cpuTemp', ['server', function(server) {
-        return {
-            restrict: 'E',
-            scope: {},
-            templateUrl: 'static/templates/modules/cpu-temp.html',
-            link: function(scope) {
-                scope.min = 0;
-                scope.max = 100;
-
-                scope.displayValue = function(serverResponseData) {
-                    return serverResponseData;
-                };
-
-                scope.utilMetrics = [{
-                    name: 'Temprature',
-                    generate: function(serverResponseData) {
-                        return serverResponseData + ' °C';
-                    }
-                }];
-
-            }
-        };
-    }]);
-
     angular.module('linuxDash').directive('cpuUtilizationChart', ['server', function(server) {
         return {
             restrict: 'E',
@@ -213,10 +189,6 @@
             template: '<table-data heading="进程CPU使用情况" module-name="cpu_intensive_processes" info="使用CPU最多的进程"></table-data>'
         },
         {
-            name: 'dockerProcesses',
-            template: '<table-data heading="Docker 进程详情" module-name="docker_processes" info="按Docker Containers使用的CPU排序"></table-data>'
-        },
-        {
             name: 'networkConnections',
             template: '<table-data heading="网络连接情况" module-name="network_connections"></table-data>'
         },
@@ -250,12 +222,8 @@
         },
         {
             name: 'swapUsage',
-            template: '<table-data heading="虚拟内存的使用情况" module-name="swap"></table-data>'
+            template: '<table-data heading="Swap使用情况" module-name="swap"></table-data>'
         },
-        /*{
-          name: 'cpuTemp',
-          template: '<table-data heading="CPU Temp" module-name="cputemp"></table-data>'
-        },*/
         {
             name: 'internetSpeed',
             template: '<key-value-list heading="网速情况" module-name="internet_speed" info="Internet connection speed of server."></key-value-list>'
@@ -291,10 +259,6 @@
         {
             name: 'cronHistory',
             template: '<table-data heading="历史任务" module-name="cron_history" info="Crons which have run recently."></table-data>'
-        },
-        {
-            name: 'raidStats',
-            template: '<table-data heading="RAID Sats" module-name="raid_status" info="RAID Status from /proc/mdstats"></table-data>'
         },
     ];
 

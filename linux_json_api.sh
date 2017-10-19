@@ -249,7 +249,7 @@ general_info() {
   uptime_seconds=$(/bin/cat /proc/uptime | awk '{print $1}')
   server_time=$(date)
 
-  echo "{ \"OS\": \"$os\", \"Hostname\": \"$hostname\", \"Uptime\": \" $(displaytime ${uptime_seconds%.*}) \", \"Server Time\": \"$server_time\" }" | _parseAndPrint
+  echo "{ \"系统版本\": \"$os\", \"主机名\": \"$hostname\", \"Uptime\": \" $(displaytime ${uptime_seconds%.*}) \", \"服务器时间\": \"$server_time\" }" | _parseAndPrint
 }
 
 io_stats() {
