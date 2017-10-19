@@ -476,8 +476,10 @@ scheduled_crons() {
     trCmd=`which tr`
 
     # System-wide crontab file and cron job directory. Change these for your system.
-    CRONTAB='/etc/crontab'
-    CRONDIR='/etc/cron.d'
+    # CRONTAB='/etc/crontab'
+    # CRONDIR='/etc/cron.d'
+    spool_CRONDIR='/var/spool/cron'
+
 
     # Single tab character. Annoyingly necessary.
     tab=$(echo -en "\t")
@@ -520,18 +522,19 @@ scheduled_crons() {
     temp=$(mktemp) || exit 1
 
     # Add all of the jobs from the system-wide crontab file.
-    $catCmd "${CRONTAB}" | clean_cron_lines | lookup_run_parts >"${temp}"
+    # $catCmd "${CRONTAB}" | clean_cron_lines | lookup_run_parts >"${temp}"
 
     # Add all of the jobs from the system-wide cron directory.
-    $catCmd "${CRONDIR}"/* | clean_cron_lines >>"${temp}"  # */ <not a comment>
+    # $catCmd "${CRONDIR}"/* | clean_cron_lines >>"${temp}"  # */ <not a comment>
+    $catCmd "${spool_CRONDIR}"/* | clean_cron_lines >>"${temp}"  # */ <not a comment>
 
     # Add each user's crontab (if it exists). Insert the user's name between the
     # five time fields and the command.
-    while read user ; do
-        $crontabCmd -l -u "${user}" 2>/dev/null |
-            clean_cron_lines |
-            $sedCmd --regexp-extended "s/^((\S+ +){5})(.+)$/\1${user} \3/" >>"${temp}"
-    done < $(cut --fields=1 --delimiter=: /etc/passwd)
+    # while read user ; do
+    #     $crontabCmd -l -u "${user}" 2>/dev/null |
+    #         clean_cron_lines |
+    #         $sedCmd --regexp-extended "s/^((\S+ +){5})(.+)$/\1${user} \3/" >>"${temp}"
+    # done < $(cut --fields=1 --delimiter=: /etc/passwd)
 
     # Output the collected crontab lines.
 
@@ -539,14 +542,13 @@ scheduled_crons() {
 
     $catCmd "${temp}" \
         | awk 'BEGIN {print "["} \
-                    {print "{ \"min\": \"" $1 \
-                    "\", \"hrs\": \"" $2 "\", " \
-                    " \"day\": \"" $3 "\", " \
-                    " \"month\": \"" $4 "\", " \
-                    " \"wkday\": \"" $5 "\", " \
-                    " \"user\": \"" $6 "\", " \
+                    {print "{ \"分\": \"" $1 \
+                    "\", \"时\": \"" $2 "\", " \
+                    " \"日\": \"" $3 "\", " \
+                    " \"月\": \"" $4 "\", " \
+                    " \"周\": \"" $5 "\", " \
                     " \"CMD\": \""} \
-                        {for(i=7;i<=NF;++i) printf("%s ", gensub("\"", "\\\\\"", "g", $i) ) } \
+                        {for(i=6;i<=NF;++i) printf("%s ", gensub("\"", "\\\\\"", "g", $i) ) } \
                     {print "\" " \
                     "}," } \
                 END {print "]"}' \
