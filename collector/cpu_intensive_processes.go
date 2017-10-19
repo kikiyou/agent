@@ -2,7 +2,6 @@ package collector
 
 import (
 	"encoding/json"
-	"fmt"
 	"log"
 	"sort"
 	"strconv"
@@ -51,8 +50,8 @@ func New_cpu_intensive_processes(Pid int32, User string, Cpu string, Rss uint64,
 }
 
 func (c *cpu_intensive_processes) Update() (res interface{}, err error) {
-	log.Println("Update---cpu_intensive_processes\n")
-	fmt.Println(get_cpu_intensive_processes())
+	// log.Println("Update---cpu_intensive_processes\n")
+	// fmt.Println(get_cpu_intensive_processes())
 
 	return get_cpu_intensive_processes(), nil
 }

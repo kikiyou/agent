@@ -8,6 +8,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/kikiyou/agent/collector"
+	"github.com/kikiyou/agent/g"
 	// "github.com/prometheus/node_exporter/collector"
 )
 
@@ -19,7 +20,7 @@ var (
 	// listeningAddress  = flag.String("listen", ":8080", "address to listen on")
 	// enabledCollectors = flag.String("enabledCollectors", "user_accounts,disk_partitions", "comma-seperated list of collectors to use")
 	enabledCollectors = flag.String("enabledCollectors", "current_ram,load_avg", "comma-seperated list of collectors to use")
-	printCollectors   = flag.Bool("printCollectors", true, "If true, print available collectors and exit")
+	printCollectors   = flag.Bool("printCollectors", false, "If true, print available collectors and exit")
 )
 
 func loadCollectors() (map[string]collector.Collector, error) {
@@ -39,6 +40,11 @@ func loadCollectors() (map[string]collector.Collector, error) {
 	return collectors, nil
 }
 
+// // Implements Collector.
+// type NodeCollector struct {
+// 	collectors map[string]collector.Collector
+// }
+
 func main() {
 	flag.Parse()
 	// printCollectors = "888"
@@ -47,7 +53,7 @@ func main() {
 		for n, _ := range collector.Factories {
 			log.Printf(" - %s\n", n)
 		}
-		// return
+		return
 	}
 	// Set Gin to production mode
 	// gin.SetMode(gin.ReleaseMode)
@@ -74,8 +80,11 @@ func main() {
 	for n, _ := range collectors {
 		log.Printf(" - %s", n)
 	}
-	log.Println("ccccccccccccccccccccc")
-	log.Println(collectors)
+	// log.Println("ccccccccccccccccccccc")
+	// log.Println(collectors)
+	g.Collectors = collectors
+	// NNodeCollector := NodeCollector{collectors: collectors}
+	// fmt.Println(NNodeCollector)
 	// MakeNodeCollector := collectors
 	// collector.RegisterNodeCollector(n)
 

@@ -36,7 +36,7 @@ func NewCollector_laod_avg() (Collector, error) {
 // }
 
 func (c *laod_avg) Update() (res interface{}, err error) {
-	log.Println("Update-----------------\n")
+	// log.Println("Update-----------------\n")
 
 	loads, err := load.Avg()
 	if err != nil {

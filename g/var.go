@@ -2,20 +2,17 @@ package g
 
 import (
 	"log"
-	"net"
 	"os"
-	"strings"
-	"sync"
-	"time"
 
+	"github.com/kikiyou/agent/collector"
 	// "github.com/kikiyou/agent/collector"
 	// "github.com/kikiyou/agent/collector"
-
-	"github.com/kikiyou/common/model"
-	"github.com/toolkits/slice"
 )
 
-var Root string
+var (
+	Root       string
+	Collectors map[string]collector.Collector
+)
 
 func InitRootDir() {
 	var err error
@@ -25,157 +22,157 @@ func InitRootDir() {
 	}
 }
 
-var LocalIp string
+// var LocalIp string
 
-func InitLocalIp() {
-	if Config().Heartbeat.Enabled {
-		conn, err := net.DialTimeout("tcp", Config().Heartbeat.Addr, time.Second*10)
-		// log.Println(Config().Heartbeat.Addr)
-		if err != nil {
-			log.Println("get local addr failed !")
-		} else {
-			LocalIp = strings.Split(conn.LocalAddr().String(), ":")[0]
-			conn.Close()
-		}
-	} else {
-		log.Println("hearbeat is not enabled, can't get localip")
-	}
-}
+// func InitLocalIp() {
+// 	if Config().Heartbeat.Enabled {
+// 		conn, err := net.DialTimeout("tcp", Config().Heartbeat.Addr, time.Second*10)
+// 		// log.Println(Config().Heartbeat.Addr)
+// 		if err != nil {
+// 			log.Println("get local addr failed !")
+// 		} else {
+// 			LocalIp = strings.Split(conn.LocalAddr().String(), ":")[0]
+// 			conn.Close()
+// 		}
+// 	} else {
+// 		log.Println("hearbeat is not enabled, can't get localip")
+// 	}
+// }
 
-var (
-	HbsClient *SingleConnRpcClient
-)
+// var (
+// 	HbsClient *SingleConnRpcClient
+// )
 
-func InitRpcClients() {
-	if Config().Heartbeat.Enabled {
-		HbsClient = &SingleConnRpcClient{
-			RpcServer: Config().Heartbeat.Addr,
-			Timeout:   time.Duration(Config().Heartbeat.Timeout) * time.Millisecond,
-		}
-	}
-}
+// func InitRpcClients() {
+// 	if Config().Heartbeat.Enabled {
+// 		HbsClient = &SingleConnRpcClient{
+// 			RpcServer: Config().Heartbeat.Addr,
+// 			Timeout:   time.Duration(Config().Heartbeat.Timeout) * time.Millisecond,
+// 		}
+// 	}
+// }
 
-func SendToTransfer(metrics []*model.MetricValue) {
-	if len(metrics) == 0 {
-		return
-	}
+// func SendToTransfer(metrics []*model.MetricValue) {
+// 	if len(metrics) == 0 {
+// 		return
+// 	}
 
-	debug := Config().Debug
+// 	debug := Config().Debug
 
-	if debug {
-		log.Printf("=> <Total=%d> %v\n", len(metrics), metrics[0])
-	}
+// 	if debug {
+// 		log.Printf("=> <Total=%d> %v\n", len(metrics), metrics[0])
+// 	}
 
-	var resp model.TransferResponse
-	SendMetrics(metrics, &resp)
+// 	var resp model.TransferResponse
+// 	SendMetrics(metrics, &resp)
 
-	if debug {
-		log.Println("<=", &resp)
-	}
-}
+// 	if debug {
+// 		log.Println("<=", &resp)
+// 	}
+// }
 
-var (
-	reportUrls     map[string]string
-	reportUrlsLock = new(sync.RWMutex)
-)
+// var (
+// 	reportUrls     map[string]string
+// 	reportUrlsLock = new(sync.RWMutex)
+// )
 
-func ReportUrls() map[string]string {
-	reportUrlsLock.RLock()
-	defer reportUrlsLock.RUnlock()
-	return reportUrls
-}
+// func ReportUrls() map[string]string {
+// 	reportUrlsLock.RLock()
+// 	defer reportUrlsLock.RUnlock()
+// 	return reportUrls
+// }
 
-func SetReportUrls(urls map[string]string) {
-	reportUrlsLock.RLock()
-	defer reportUrlsLock.RUnlock()
-	reportUrls = urls
-}
+// func SetReportUrls(urls map[string]string) {
+// 	reportUrlsLock.RLock()
+// 	defer reportUrlsLock.RUnlock()
+// 	reportUrls = urls
+// }
 
-var (
-	reportPorts     []int64
-	reportPortsLock = new(sync.RWMutex)
-)
+// var (
+// 	reportPorts     []int64
+// 	reportPortsLock = new(sync.RWMutex)
+// )
 
-func ReportPorts() []int64 {
-	reportPortsLock.RLock()
-	defer reportPortsLock.RUnlock()
-	return reportPorts
-}
+// func ReportPorts() []int64 {
+// 	reportPortsLock.RLock()
+// 	defer reportPortsLock.RUnlock()
+// 	return reportPorts
+// }
 
-func SetReportPorts(ports []int64) {
-	reportPortsLock.Lock()
-	defer reportPortsLock.Unlock()
-	reportPorts = ports
-}
+// func SetReportPorts(ports []int64) {
+// 	reportPortsLock.Lock()
+// 	defer reportPortsLock.Unlock()
+// 	reportPorts = ports
+// }
 
-var (
-	duPaths     []string
-	duPathsLock = new(sync.RWMutex)
-)
+// var (
+// 	duPaths     []string
+// 	duPathsLock = new(sync.RWMutex)
+// )
 
-func DuPaths() []string {
-	duPathsLock.RLock()
-	defer duPathsLock.RUnlock()
-	return duPaths
-}
+// func DuPaths() []string {
+// 	duPathsLock.RLock()
+// 	defer duPathsLock.RUnlock()
+// 	return duPaths
+// }
 
-func SetDuPaths(paths []string) {
-	duPathsLock.Lock()
-	defer duPathsLock.Unlock()
-	duPaths = paths
-}
+// func SetDuPaths(paths []string) {
+// 	duPathsLock.Lock()
+// 	defer duPathsLock.Unlock()
+// 	duPaths = paths
+// }
 
-var (
-	// tags => {1=>name, 2=>cmdline}
-	// e.g. 'name=falcon-agent'=>{1=>falcon-agent}
-	// e.g. 'cmdline=xx'=>{2=>xx}
-	reportProcs     map[string]map[int]string
-	reportProcsLock = new(sync.RWMutex)
-)
+// var (
+// 	// tags => {1=>name, 2=>cmdline}
+// 	// e.g. 'name=falcon-agent'=>{1=>falcon-agent}
+// 	// e.g. 'cmdline=xx'=>{2=>xx}
+// 	reportProcs     map[string]map[int]string
+// 	reportProcsLock = new(sync.RWMutex)
+// )
 
-func ReportProcs() map[string]map[int]string {
-	reportProcsLock.RLock()
-	defer reportProcsLock.RUnlock()
-	return reportProcs
-}
+// func ReportProcs() map[string]map[int]string {
+// 	reportProcsLock.RLock()
+// 	defer reportProcsLock.RUnlock()
+// 	return reportProcs
+// }
 
-func SetReportProcs(procs map[string]map[int]string) {
-	reportProcsLock.Lock()
-	defer reportProcsLock.Unlock()
-	reportProcs = procs
-}
+// func SetReportProcs(procs map[string]map[int]string) {
+// 	reportProcsLock.Lock()
+// 	defer reportProcsLock.Unlock()
+// 	reportProcs = procs
+// }
 
-var (
-	ips     []string
-	ipsLock = new(sync.Mutex)
-)
+// var (
+// 	ips     []string
+// 	ipsLock = new(sync.Mutex)
+// )
 
-func TrustableIps() []string {
-	ipsLock.Lock()
-	defer ipsLock.Unlock()
-	return ips
-}
+// func TrustableIps() []string {
+// 	ipsLock.Lock()
+// 	defer ipsLock.Unlock()
+// 	return ips
+// }
 
-func SetTrustableIps(ipStr string) {
-	arr := strings.Split(ipStr, ",")
-	ipsLock.Lock()
-	defer ipsLock.Unlock()
-	ips = arr
-}
+// func SetTrustableIps(ipStr string) {
+// 	arr := strings.Split(ipStr, ",")
+// 	ipsLock.Lock()
+// 	defer ipsLock.Unlock()
+// 	ips = arr
+// }
 
-func IsTrustable(remoteAddr string) bool {
-	ip := remoteAddr
-	idx := strings.LastIndex(remoteAddr, ":")
-	if idx > 0 {
-		ip = remoteAddr[0:idx]
-	}
+// func IsTrustable(remoteAddr string) bool {
+// 	ip := remoteAddr
+// 	idx := strings.LastIndex(remoteAddr, ":")
+// 	if idx > 0 {
+// 		ip = remoteAddr[0:idx]
+// 	}
 
-	if ip == "127.0.0.1" {
-		return true
-	}
+// 	if ip == "127.0.0.1" {
+// 		return true
+// 	}
 
-	return slice.ContainsString(TrustableIps(), ip)
-}
+// 	return slice.ContainsString(TrustableIps(), ip)
+// }
 
 //////////////////////////
 // // Implements Collector.

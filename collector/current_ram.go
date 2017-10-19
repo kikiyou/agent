@@ -32,7 +32,7 @@ func Newcurrent_ram(Total uint64, Used uint64, Available uint64) *current_ram {
 }
 
 func (c *current_ram) Update() (res interface{}, err error) {
-	log.Println("Update-----------------\n")
+	// log.Println("Update-----------------\n")
 	// load, err := getLoad1()
 	if err != nil {
 		// return fmt.Errorf("Couldn't get load: %s", err error)
@@ -42,8 +42,6 @@ func (c *current_ram) Update() (res interface{}, err error) {
 	v, _ := mem.VirtualMemory()
 	var t uint64 = 1024 * 1024
 	current_ram := &current_ram{v.Total / t, v.Used / t, v.Available / t}
-	log.Printf("Total: %v, Free:%v, UsedPercent:%f%%\n", v.Total, v.Available, v.UsedPercent)
-
-	// load1.Collect(ch)
+	// log.Printf("Total: %v, Free:%v, UsedPercent:%f%%\n", v.Total, v.Available, v.UsedPercent)
 	return current_ram, nil
 }
