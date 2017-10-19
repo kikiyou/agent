@@ -270,19 +270,20 @@ ip_addresses() {
   grepCmd=`which grep`
   sedCmd=`which sed`
   ifconfigCmd=`which ifconfig`
+  getOutInterface=`ip route get 8.8.8.8 | sed -nr 's/.*dev ([^\ ]+).*/\1/p'`
   trCmd=`which tr`
   digCmd=`which dig`
 
-  externalIp=`$digCmd +short myip.opendns.com @resolver1.opendns.com`
+  # externalIp=`$digCmd +short myip.opendns.com @resolver1.opendns.com`
 
   echo -n "["
 
-  for item in $($ifconfigCmd | $grepCmd -oP "^[a-zA-Z0-9:]*(?=:)")
+  for item in ${getOutInterface}
   do
-      echo -n "{\"interface\" : \""$item"\", \"ip\" : \"$( $ifconfigCmd $item | $grepCmd "inet" | $awkCmd '{match($0,"inet (addr:)?([0-9.]*)",a)}END{ if (NR != 0){print a[2]; exit}{print "none"}}')\"}, "
+      echo -n "{\"网卡名\" : \""$item"\", \"ip\" : \"$( ip route get 8.8.8.8| grep $item| sed 's/.*src \(.*\)$/\1/g')\"}, "
   done
 
-  echo "{ \"interface\": \"external\", \"ip\": \"$externalIp\" } ]" | _parseAndPrint
+  echo "{ \"网卡名\": \"external\", \"ip\": \"占位\" } ]" | _parseAndPrint
 }
 
 load_avg() {
