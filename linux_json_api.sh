@@ -35,7 +35,7 @@ bandwidth() {
 }
 
 common_applications() {
-  result=$(whereis php node mysql mongo vim python ruby java apache2 nginx openssl vsftpd make \
+  result=$(whereis  -b smartctl hddtemp  mysql vsftpd nginx \
   | awk -F: '{if(length($2)==0) { installed="false"; } else { installed="true"; } \
         print \
         "{ \
@@ -641,7 +641,16 @@ user_accounts() {
 
   echo [ ${result%?} ] | _parseAndPrint
 }
-
+## 下面是自己添加
+ss_info() {
+if [ -d "/opt/fonsview/NE/ss/data/proc" ]; then 
+  /bin/cat /opt/fonsview/NE/ss/data/proc/version \
+    | /usr/bin/awk -F: 'BEGIN {print "{"} {print "\"" $1 "\": \"" $2 "\"," } END {print "}"}' \
+    | /bin/sed 'N;$s/,\n/\n/;P;D' \
+    | _parseAndPrint
+fi
+}
+### 上面是自己添加的
 fnCalled="$1"
 
 ${fnCalled}

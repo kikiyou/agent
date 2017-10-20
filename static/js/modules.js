@@ -233,13 +233,17 @@
             template: '<key-value-list heading="Memcached" module-name="memcached" info="Memcached 是一个高性能的分布式内存对象缓存系统，用于动态Web应用以减轻数据库负载"></key-value-list>'
         },
         {
-            name: 'redis',
-            template: '<key-value-list heading="Redis" module-name="redis" info="Redis是一个开源的使用ANSI C语言编写、支持网络、可基于内存亦可持久化的日志型、Key-Value数据库"></key-value-list>'
+            name: 'redis11',
+            template: '<key-value-list heading="Redis" module-name="redis" info="Redis11是一个开源的使用ANSI C语言编写、支持网络、可基于内存亦可持久化的日志型、Key-Value数据库"></key-value-list>'
         },
         {
-            name: 'pm2',
-            template: '<table-data heading="P(rocess) M(anager) 2" module-name="pm2" info="PM2是一个带有负载均衡功能的Node应用的进程管理器"></table-data>'
+            name: 'ss',
+            template: '<key-value-list heading="SS网元" module-name="ss_info" info="SS 版本信息查看"></key-value-list>'
         },
+        // {
+        //     name: 'pm2',
+        //     template: '<table-data heading="P(rocess) M(anager) 2" module-name="pm2" info="PM2是一个带有负载均衡功能的Node应用的进程管理器"></table-data>'
+        // },
         {
             name: 'memoryInfo',
             template: '<key-value-list heading="内存信息" module-name="memory_info" info="/proc/meminfo read-out."></key-value-list>'
