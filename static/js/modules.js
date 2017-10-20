@@ -224,10 +224,10 @@
             name: 'swapUsage',
             template: '<table-data heading="Swap使用情况" module-name="swap"></table-data>'
         },
-        {
-            name: 'internetSpeed',
-            template: '<key-value-list heading="网速情况" module-name="internet_speed" info="Internet connection speed of server."></key-value-list>'
-        },
+        // {
+        //     name: 'internetSpeed',
+        //     template: '<key-value-list heading="网速情况" module-name="internet_speed" info="Internet connection speed of server."></key-value-list>'
+        // },
         {
             name: 'memcached',
             template: '<key-value-list heading="Memcached" module-name="memcached" info="Memcached 是一个高性能的分布式内存对象缓存系统，用于动态Web应用以减轻数据库负载"></key-value-list>'
