@@ -190,7 +190,7 @@
         },
         {
             name: 'networkConnections',
-            template: '<table-data heading="网络连接情况" module-name="network_connections"></table-data>'
+            template: '<table-data heading="netstat连接情况" module-name="network_connections"></table-data>'
         },
         {
             name: 'serverAccounts',
@@ -212,10 +212,10 @@
             name: 'commonApplications',
             template: '<table-data heading="常见的应用信息" module-name="common_applications" info="常用安装的应用程序信息"></table-data>'
         },
-        {
-            name: 'pingSpeeds',
-            template: '<table-data heading="Ping值速度" module-name="ping" info="Ping值速度精确到毫秒"></table-data>'
-        },
+        // {
+        //     name: 'pingSpeeds',
+        //     template: '<table-data heading="Ping值速度" module-name="ping" info="Ping值速度精确到毫秒"></table-data>'
+        // },
         {
             name: 'bandwidth',
             template: '<table-data heading="带宽" module-name="bandwidth"></table-data>'

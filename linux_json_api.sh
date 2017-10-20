@@ -10,7 +10,7 @@ _parseAndPrint() {
 arp_cache() {
   arpCommand=$(command -v arp)
 
-  result=$($arpCommand | awk 'BEGIN {print "["} NR>1 \
+  result=$($arpCommand -n | awk 'BEGIN {print "["} NR>1 \
               {print "{ \"addr\": \"" $1 "\", " \
                     "\"hw_type\": \"" $2 "\", " \
                     "\"hw_addr.\": \"" $3 "\", " \
@@ -359,7 +359,7 @@ ping() {
 
 	# get absolute path to config file
 	SCRIPTPATH=`dirname $(readlink -f $0)`
-	CONFIG_PATH=$SCRIPTPATH"/config/ping_hosts"
+	CONFIG_PATH=$SCRIPTPATH"/ping_hosts"
 
 	catCmd=`which cat`
 	pingCmd=`which ping`
