@@ -2,9 +2,15 @@ package main
 
 import (
 	"flag"
+	"fmt"
+	"html/template"
+	"io/ioutil"
 	"log"
 	"net/http"
 	"strings"
+
+	"github.com/kikiyou/agent/shell"
+	"github.com/kikiyou/agent/templates"
 
 	"github.com/gin-gonic/gin"
 	"github.com/kikiyou/agent/collector"
@@ -44,7 +50,11 @@ func loadCollectors() (map[string]collector.Collector, error) {
 // type NodeCollector struct {
 // 	collectors map[string]collector.Collector
 // }
-
+func check(e error) {
+	if e != nil {
+		panic(e)
+	}
+}
 func main() {
 	flag.Parse()
 	// printCollectors = "888"
@@ -63,8 +73,26 @@ func main() {
 
 	// Process the templates at the start so that they don't have to be loaded
 	// from the disk again. This makes serving HTML pages very fast.
-	router.LoadHTMLGlob("templates/*")
-	router.Static("/static", "static")
+	// router.LoadHTMLGlob("templates/*")
+	bytes, err := shell.Asset("shell/linux_json_api.sh") // 根据地址获取对应内容
+	if err != nil {
+		fmt.Println(err)
+		// return "", "xx"
+	}
+	err = ioutil.WriteFile("/tmp/linux_json_api.sh", bytes, 0755)
+	check(err)
+	// -pkg=asset, 打包的包名是 asset
+	bytes, err = templates.Asset("templates/index.html") // 根据地址获取对应内容
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	t, err := template.New("index.html").Parse(string(bytes)) // 比如用于模板处理
+	router.SetHTMLTemplate(t)
+	// fmt.Println(string(bytes))
+	// Start serving the application
+
+	router.StaticFS("/static", assetFS())
 
 	router.GET("/ping", func(c *gin.Context) {
 		c.JSON(200, gin.H{
@@ -90,8 +118,7 @@ func main() {
 
 	initializeRoutes()
 
-	// Start serving the application
-	router.Run(":9911")
+	router.Run(":8899")
 }
 
 // Render one of HTML, JSON or CSV based on the 'Accept' header of the request

@@ -13,14 +13,17 @@ import (
 )
 
 func execScriptsGetJSON(module string) (string, error) {
-	/* Grab filesystem data from df	*/
-	cmd := exec.Command("./linux_json_api.sh", module)
+	var out string
+	var err error
+
+	// defer f.Close()
+	cmd := exec.Command("/tmp/linux_json_api.sh", module)
 
 	outCh := make(chan []byte, 1)
 	errCh := make(chan error, 1)
 
-	var out string
-	var err error
+	// var out string
+	// var err error
 
 	go func() {
 		_out, _err := cmd.Output()
@@ -72,7 +75,7 @@ func ModulesRoutes(c *gin.Context) {
 	} else {
 		output, _ := execScriptsGetJSON(module)
 		// fmt.Println("output77")
-		fmt.Println(output)
+		// fmt.Println(output)
 		c.String(http.StatusOK, output)
 	}
 
