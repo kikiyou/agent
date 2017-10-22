@@ -17,7 +17,7 @@ func execScriptsGetJSON(module string) (string, error) {
 	var err error
 
 	// defer f.Close()
-	cmd := exec.Command("/tmp/linux_json_api.sh", module)
+	cmd := exec.Command(g.TempScriptsFile, module)
 
 	outCh := make(chan []byte, 1)
 	errCh := make(chan error, 1)

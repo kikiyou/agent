@@ -1,6 +1,7 @@
 package g
 
 import (
+	"io/ioutil"
 	"log"
 	"os"
 
@@ -10,9 +11,16 @@ import (
 )
 
 var (
-	Root       string
-	Collectors map[string]collector.Collector
+	Root            string
+	Collectors      map[string]collector.Collector
+	TempScriptsFile string
 )
+
+func CheckErr(e error) {
+	if e != nil {
+		panic(e)
+	}
+}
 
 func InitRootDir() {
 	var err error
@@ -20,6 +28,21 @@ func InitRootDir() {
 	if err != nil {
 		log.Fatalln("getwd fail:", err)
 	}
+}
+
+func InitTempScriptsFile() {
+	var err error
+	tmpfile, err := ioutil.TempFile("/tmp", "linux_json_api")
+	if err != nil {
+		log.Fatalln("TempScriptsFile fail:", err)
+	}
+	TempScriptsFile = tmpfile.Name()
+
+	defer os.Remove(TempScriptsFile) // clean up
+	// if err := tmpfile.Close(); err != nil {
+	// 	log.Fatal(err)
+	// }
+
 }
 
 // var LocalIp string
