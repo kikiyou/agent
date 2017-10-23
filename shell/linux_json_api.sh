@@ -650,6 +650,9 @@ if [ -d "/opt/fonsview/NE/ss/data/proc" ]; then
     | _parseAndPrint
 fi
 }
+SLEEP() {
+  sleep 10
+}
 ### 上面是自己添加的
 fnCalled="$1"
 

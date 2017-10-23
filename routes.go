@@ -3,7 +3,9 @@
 package main
 
 import (
+	"bytes"
 	"fmt"
+	"log"
 	"net/http"
 	"os/exec"
 	"time"
@@ -16,48 +18,39 @@ func execScriptsGetJSON(module string) (string, error) {
 	var out string
 	var err error
 
-	// defer f.Close()
+	// var buf bytes.Buffer
+	// cmd.Stdout = &buf
+
 	cmd := exec.Command(g.TempScriptsFile, module)
+	// Use a bytes.Buffer to get the output
+	var buf bytes.Buffer
+	cmd.Stdout = &buf
 
-	outCh := make(chan []byte, 1)
-	errCh := make(chan error, 1)
+	cmd.Start()
 
-	// var out string
-	// var err error
+	// Use a channel to signal completion so we can use a select statement
+	done := make(chan error)
+	go func() { done <- cmd.Wait() }()
 
-	go func() {
-		_out, _err := cmd.Output()
-		if _err != nil {
-			errCh <- fmt.Errorf("failed to collect shell data: %s", _err)
-			return
-		}
-		outCh <- _out
-	}()
+	// Start a timer
+	timeout := time.After(2 * time.Second)
 
-WAIT:
-	for {
-		select {
-		case res := <-outCh:
-			if res != nil {
-				out = string(res)
-			} else {
-				out, err = "nil", fmt.Errorf("failed to collect shell data")
-			}
-			break WAIT
-		case err = <-errCh:
-			out = "nil"
-			break WAIT
-		case <-time.After(10 * time.Second):
-			// Kill the process if it takes too long
-			if killErr := cmd.Process.Kill(); killErr != nil {
-				fmt.Printf("%s timeout,failed to kill:%s", module, killErr)
-				return "module timeout", err
-				// Force goroutine to exit
-				<-outCh
-			}
+	// The select statement allows us to execute based on which channel
+	// we get a message from first.
+	select {
+	case <-timeout:
+		// Timeout happened first, kill the process and print a message.
+		cmd.Process.Kill()
+		log.Printf("%s module: timeout,fail to killed", module)
+		out = fmt.Sprintf("%s module: timeout,fail to killed", module)
+	case err := <-done:
+		// Command completed before timeout. Print output and error if it exists.
+		out = buf.String()
+		if err != nil {
+			log.Printf("%s modele: Non-zero exit code:%s", module, err)
+			out = fmt.Sprintf("%s modele: Non-zero exit code:%s", module, err)
 		}
 	}
-
 	return out, err
 }
 
