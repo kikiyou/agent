@@ -102,5 +102,8 @@ func initializeRoutes() {
 
 		c.String(http.StatusOK, fmt.Sprintf("'%s' uploaded!", file.Filename))
 	})
+	//download GET 请求输入页面
+	//post请求真的下载 GET 请求输入页面
+	//command get 请求下载 post请求 真的执行
 
 }
