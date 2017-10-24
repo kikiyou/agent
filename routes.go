@@ -84,4 +84,23 @@ func initializeRoutes() {
 	// router.GET("/", ensureLoggedIn(), showIndexPage)
 	router.GET("/", showIndexPage)
 	router.GET("/server", ModulesRoutes)
+
+	// Set a lower memory limit for multipart forms (default is 32 MiB)
+	// router.MaxMultipartMemory = 8 << 20  // 8 MiB
+	router.GET("/upload", func(c *gin.Context) {
+		result := `<html><body><form method=POST action=/upload enctype=multipart/form-data><input type=file name=file><input type=submit></form>`
+		c.Header("Content-Type", "text/html; charset=utf-8")
+		c.String(http.StatusOK, result)
+	})
+	router.POST("/upload", func(c *gin.Context) {
+		// single file
+		file, _ := c.FormFile("file")
+		log.Println(file.Filename)
+
+		// Upload the file to specific dst.
+		// c.SaveUploadedFile(file, dst)
+
+		c.String(http.StatusOK, fmt.Sprintf("'%s' uploaded!", file.Filename))
+	})
+
 }
