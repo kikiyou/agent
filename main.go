@@ -20,13 +20,44 @@ import (
 
 var router *gin.Engine
 
-// func init (
-// 	defaultPublicDir = filepath.Join(g.Root, "public")
+// var authorized gin.HandlerFunc
 
-// )
+// VERSION - version
+const VERSION = "0.0.2"
+
+// shBasicAuthVar - name of env var for basic auth credentials
+const shBasicAuthVar = "SH_BASIC_AUTH"
+
+// Config - config struct
+type Config struct {
+	port          int    // server port
+	cache         int    // caching command out (in seconds)
+	timeout       int    // timeout for shell command (in seconds)
+	host          string // server host
+	exportVars    string // list of environment vars for export to script
+	shell         string // custom shell
+	defaultShell  string // shell by default
+	defaultShOpt  string // shell option for one-liner (-c or /C)
+	cert          string // SSL certificate
+	key           string // SSL private key path
+	authUser      string // basic authentication user name
+	authPass      string // basic authentication password
+	exportAllVars bool   // export all current environment vars
+	setCGI        bool   // set CGI variables
+	setForm       bool   // parse form from URL
+	noIndex       bool   // dont generate index page
+	addExit       bool   // add /exit command
+	oneThread     bool   // run each shell commands in one thread
+	showErrors    bool   // returns the standard output even if the command exits with a non-zero exit code
+	includeStderr bool   // also returns output written to stderr (default is stdout only)
+}
+
+var appConfig Config
 var (
 	// configFile        = flag.String("config", "node_exporter.conf", "config file.")
 	// memProfile        = flag.String("memprofile", "", "write memory profile to this file")
+	basicAuth        = flag.String("basic-auth", "admin:admin", "setup HTTP Basic Authentication (\"user_name:password\")")
+	showVersion      = flag.Bool("version", false, "Print version information.")
 	listeningAddress = flag.String("listen", ":8899", "address to listen on")
 	// enabledCollectors = flag.String("enabledCollectors", "user_accounts,disk_partitions", "comma-seperated list of collectors to use")
 	enabledCollectors = flag.String("enabledCollectors", "current_ram,load_avg", "comma-seperated list of collectors to use")
@@ -51,15 +82,59 @@ func loadCollectors() (map[string]collector.Collector, error) {
 	return collectors, nil
 }
 
+// getConfig - parse arguments
+func getConfig() (appConfig Config, err error) {
+	// var (
+	// 	// logFilename string
+	// 	basicAuth string
+	// )
+
+	if *basicAuth == "" && len(os.Getenv(shBasicAuthVar)) > 0 {
+		*basicAuth = os.Getenv(shBasicAuthVar)
+	}
+
+	if len(*basicAuth) > 0 {
+		basicAuthParts := strings.SplitN(*basicAuth, ":", 2)
+		if len(basicAuthParts) != 2 {
+			return Config{}, fmt.Errorf("HTTP basic authentication must be in format: name:password, got: %s", basicAuth)
+		}
+		appConfig.authUser, appConfig.authPass = basicAuthParts[0], basicAuthParts[1]
+	}
+
+	// if appConfig.shell != "" && appConfig.shell != appConfig.defaultShell {
+	// 	if _, err := exec.LookPath(appConfig.shell); err != nil {
+	// 		return Config{}, fmt.Errorf("an error has occurred while searching for shell executable %q: %s", appConfig.shell, err)
+	// 	}
+	// }
+
+	// // need >= 2 arguments and count of it must be even
+	// args := flag.Args()
+	// if len(args) < 2 || len(args)%2 == 1 {
+	// 	return Config{}, fmt.Errorf("requires a pair of path and shell command")
+	// }
+	// fmt.Println("-------------------")
+	// fmt.Println(args)
+	// for i := 0; i < len(args); i += 2 {
+	// 	path, cmd := args[i], args[i+1]
+	// 	if path[0] != '/' {
+	// 		return Config{}, fmt.Errorf("the path %q does not begin with the prefix /", path)
+	// 	}
+	// 	cmdHandlers = append(cmdHandlers, Command{path: path, cmd: cmd})
+	// }
+
+	return appConfig, nil
+}
+
 func main() {
 	// Set Gin to production mode
 	// gin.SetMode(gin.ReleaseMode)
 
 	flag.Parse()
-	//init
-	// g.InitRootDir()
-	//
-
+	if *showVersion {
+		fmt.Fprintln(os.Stdout, VERSION)
+		os.Exit(0)
+	}
+	log.Println("Starting version", VERSION)
 	if *printCollectors {
 		log.Printf("Available collectors:\n")
 		for n, _ := range collector.Factories {
@@ -67,6 +142,8 @@ func main() {
 		}
 		return
 	}
+	appConfig, _ = getConfig()
+
 	collectors, err := loadCollectors()
 	if err != nil {
 		log.Fatalf("Couldn't load config and collectors: %s", err)
@@ -101,6 +178,9 @@ func main() {
 
 	// Set the router as the default one provided by Gin
 	router = gin.Default()
+	// authorized = gin.BasicAuth(gin.Accounts{
+	// 	"admin": "admin",
+	// })
 	router.SetHTMLTemplate(t)
 	router.StaticFS("/static", assetFS())
 	// fmt.Println("##############")

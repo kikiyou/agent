@@ -10,19 +10,41 @@ import (
 
 // This middleware ensures that a request will be aborted with an error
 // if the user is not logged in
-func ensureLoggedIn() gin.HandlerFunc {
-	return func(c *gin.Context) {
-		// If there's an error or if the token is empty
-		// the user is not logged in
-		loggedInInterface, _ := c.Get("is_logged_in")
-		loggedIn := loggedInInterface.(bool)
-		if !loggedIn {
-			//if token, err := c.Cookie("token"); err != nil || token == "" {
-			c.AbortWithStatus(http.StatusUnauthorized)
-		}
-	}
-}
+// func ensureLoggedIn() gin.HandlerFunc {
+// 	return func(c *gin.Context) {
+// 		// If there's an error or if the token is empty
+// 		// the user is not logged in
+// 		reqUser, reqPass, ok := c.BasicAuth()
+// 		// fmt.println(reqUser)
+// 		// fmt.println(reqPass)
+// 		// 	gin.BasicAuth(gin.Accounts{
+// 		// 		"foo":    "bar",
+// 		// 		"austin": "1234",
+// 		// 		"lena":   "hello2",
+// 		// 		"manu":   "4321",
+// 		// 	})
 
+// 		// 	loggedInInterface, _ := c.Get("is_logged_in")
+// 		// 	loggedIn := loggedInInterface.(bool)
+// 		// 	if !loggedIn {
+// 		// 		//if token, err := c.Cookie("token"); err != nil || token == "" {
+// 		// 		c.AbortWithStatus(http.StatusUnauthorized)
+// 		// 	}
+// 	}
+// }
+
+// func ensureLoggedIn() gin.HandlerFunc {
+// 	return func(c *gin.Context) {
+// 		// If there's an error or if the token is empty
+// 		// the user is not logged in
+// 		loggedInInterface, _ := c.Get("is_logged_in")
+// 		loggedIn := loggedInInterface.(bool)
+// 		if !loggedIn {
+// 			//if token, err := c.Cookie("token"); err != nil || token == "" {
+// 			c.AbortWithStatus(http.StatusUnauthorized)
+// 		}
+// 	}
+// }
 // This middleware ensures that a request will be aborted with an error
 // if the user is already logged in
 func ensureNotLoggedIn() gin.HandlerFunc {

@@ -8,6 +8,7 @@ import (
 	"log"
 	"net/http"
 	"os/exec"
+	"path/filepath"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -33,7 +34,7 @@ func execScriptsGetJSON(module string) (string, error) {
 	go func() { done <- cmd.Wait() }()
 
 	// Start a timer
-	timeout := time.After(2 * time.Second)
+	timeout := time.After(10 * time.Second)
 
 	// The select statement allows us to execute based on which channel
 	// we get a message from first.
@@ -81,13 +82,16 @@ func initializeRoutes() {
 	router.Use(setUserStatus())
 
 	// Handle the index route
+	authorized := gin.BasicAuth(gin.Accounts{
+		appConfig.authUser: appConfig.authPass,
+	})
 	// router.GET("/", ensureLoggedIn(), showIndexPage)
-	router.GET("/", showIndexPage)
+	router.GET("/", authorized, showIndexPage)
 	router.GET("/server", ModulesRoutes)
 
 	// Set a lower memory limit for multipart forms (default is 32 MiB)
 	// router.MaxMultipartMemory = 8 << 20  // 8 MiB
-	router.GET("/upload", func(c *gin.Context) {
+	router.GET("/upload", authorized, func(c *gin.Context) {
 		result := `<html><body><form method=POST action=/upload enctype=multipart/form-data><input type=file name=file><input type=submit></form>`
 		c.Header("Content-Type", "text/html; charset=utf-8")
 		c.String(http.StatusOK, result)
@@ -98,7 +102,8 @@ func initializeRoutes() {
 		log.Println(file.Filename)
 
 		// Upload the file to specific dst.
-		// c.SaveUploadedFile(file, dst)
+		dst := filepath.Join(*publicSharePath, file.Filename)
+		c.SaveUploadedFile(file, dst)
 
 		c.String(http.StatusOK, fmt.Sprintf("'%s' uploaded!", file.Filename))
 	})
