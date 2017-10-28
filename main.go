@@ -10,12 +10,14 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/kikiyou/agent/collector"
 	"github.com/kikiyou/agent/g"
 	"github.com/kikiyou/agent/shell"
 	"github.com/kikiyou/agent/templates"
+	cache "github.com/patrickmn/go-cache"
 )
 
 var router *gin.Engine
@@ -27,6 +29,15 @@ const VERSION = "0.0.2"
 
 // shBasicAuthVar - name of env var for basic auth credentials
 const shBasicAuthVar = "SH_BASIC_AUTH"
+
+// defaultShellPOSIX - shell executable by default in POSIX systems
+const defaultShellPOSIX = "sh"
+
+// defaultShellWindows - shell executable by default in Windows
+const defaultShellWindows = "cmd"
+
+// defaultShellPlan9 - shell executable by default in Plan9
+const defaultShellPlan9 = "rc"
 
 // Config - config struct
 type Config struct {
@@ -53,6 +64,7 @@ type Config struct {
 }
 
 var appConfig Config
+var CacheTTL *cache.Cache
 var (
 	// configFile        = flag.String("config", "node_exporter.conf", "config file.")
 	// memProfile        = flag.String("memprofile", "", "write memory profile to this file")
@@ -197,6 +209,12 @@ func main() {
 			"message": "pong",
 		})
 	})
+	//
+	// var CacheTTL *cache.Cache
+	appConfig.cache = 11
+	if appConfig.cache > 0 {
+		CacheTTL = cache.New(5*time.Minute, 10*time.Minute)
+	}
 	// Initialize the routes
 	initializeRoutes()
 
