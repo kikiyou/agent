@@ -27,42 +27,13 @@ func execScriptsGetJSON(module string) (string, error) {
 
 	// cmd := exec.Command(g.TempScriptsFile, module)
 	cmd := fmt.Sprintf("%s %s", g.TempScriptsFile, module)
-	appConfig.cache = 10
+	appConfig.cache = 2
 	path := "/tmp"
 	shell, params, err := getShellAndParams(cmd, appConfig)
 	if err != nil {
 		return "", err
 	}
 	out, err = execShellCommand(appConfig, path, shell, params, CacheTTL)
-	// // Use a bytes.Buffer to get the output
-	// var buf bytes.Buffer
-	// cmd.Stdout = &buf
-
-	// cmd.Start()
-
-	// // Use a channel to signal completion so we can use a select statement
-	// done := make(chan error)
-	// go func() { done <- cmd.Wait() }()
-
-	// // Start a timer
-	// timeout := time.After(10 * time.Second)
-
-	// // The select statement allows us to execute based on which channel
-	// // we get a message from first.
-	// select {
-	// case <-timeout:
-	// 	// Timeout happened first, kill the process and print a message.
-	// 	cmd.Process.Kill()
-	// 	log.Printf("%s module: timeout,fail to killed", module)
-	// 	out = fmt.Sprintf("%s module: timeout,fail to killed", module)
-	// case err := <-done:
-	// 	// Command completed before timeout. Print output and error if it exists.
-	// 	out = buf.String()
-	// 	if err != nil {
-	// 		log.Printf("%s modele: Non-zero exit code:%s", module, err)
-	// 		out = fmt.Sprintf("%s modele: Non-zero exit code:%s", module, err)
-	// 	}
-	// }
 	return out, err
 }
 
@@ -112,14 +83,14 @@ func execShellCommand(appConfig Config, path string, shell string, params []stri
 		out string
 		err error
 	)
+	if path == "" {
+		path = g.PublicPath
+	}
 	// appConfig.cache = 1
 	log.Println("###############################\n")
 	log.Println(appConfig.cache)
-	fingerStr := fmt.Sprintf("%s%s", shell, strings.Join(params[:], ","))
+	fingerStr := fmt.Sprintln(path, shell, strings.Join(params[:], ","))
 	fingerPrint := g.MD5(fingerStr)
-	// fmt.Println(fingerStr)
-	// fmt.Println(fingerPrint)
-	// fingerprint=
 
 	if appConfig.cache > 0 {
 		if cacheData, found := cacheTTL.Get(fingerPrint); !found {
@@ -127,17 +98,14 @@ func execShellCommand(appConfig Config, path string, shell string, params []stri
 			log.Println("no cache")
 		} else if found {
 			// cache hit
-			log.Println("cache hit %s", cacheData)
+			log.Println("cache hit %s", fingerStr)
 			out, _ = cacheData.(string)
 			// out, _ = fmt.Fprintln(os.Stdout, cacheData)
 			return out, nil
 		}
 	}
 	cmd := exec.Command(shell, params...)
-	cmd.Dir = g.PublicPath
-	if path != "" {
-		cmd.Dir = path
-	}
+	cmd.Dir = path
 	// Use a bytes.Buffer to get the output
 	var buf bytes.Buffer
 	cmd.Stdout = &buf
@@ -171,27 +139,13 @@ func execShellCommand(appConfig Config, path string, shell string, params []stri
 		// if cacheErr := cacheTTL.SetBytes(req.RequestURI, shellOut, appConfig.cache); cacheErr != nil {
 		// 	log.Printf("set to cache failed: %s", cacheErr)
 		// }
-		cacheTTL.Set(fingerPrint, out, cache.NoExpiration)
+		cacheTTL.Set(fingerPrint, out, time.Duration(appConfig.cache)*time.Second)
 	}
 	// out = "-"
 	return out, err
 }
 
 func initializeRoutes() {
-
-	// // Set the value of the key "foo" to "bar", with the default expiration time
-	// CacheTTL.Set("foo", "bar", cache.DefaultExpiration)
-
-	// // Set the value of the key "baz" to 42, with no expiration time
-	// // (the item won't be removed until it is re-set, or removed using
-	// // c.Delete("baz")
-	// CacheTTL.Set("baz", 42, cache.NoExpiration)
-
-	// // Get the string associated with the key "foo" from the cache
-	// foo, found := CacheTTL.Get("foo")
-	// if found {
-	// 	fmt.Println(foo)
-	// }
 
 	// Use the setUserStatus middleware for every route to set a flag
 	// indicating whether the request was from an authenticated user or not
@@ -241,8 +195,8 @@ func initializeRoutes() {
 			shellOut, err := execShellCommand(appConfig, path, shell, params, CacheTTL)
 			fmt.Println(shellOut)
 			// getShellHandler(appConfig, path, shell, params, cacheTTL)
+			c.String(http.StatusOK, shellOut)
 		}
-		// c.String(http.StatusOK, fmt.Sprintf("'%s' uploaded!", file.Filename))
 	})
 
 }
