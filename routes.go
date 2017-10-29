@@ -21,11 +21,6 @@ import (
 func execScriptsGetJSON(module string) (string, error) {
 	var out string
 	var err error
-
-	// var buf bytes.Buffer
-	// cmd.Stdout = &buf
-
-	// cmd := exec.Command(g.TempScriptsFile, module)
 	cmd := fmt.Sprintf("%s %s", g.TempScriptsFile, module)
 	appConfig.cache = 2
 	path := "/tmp"
@@ -33,7 +28,7 @@ func execScriptsGetJSON(module string) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	out, err = execShellCommand(appConfig, path, shell, params, CacheTTL)
+	out, err = execCommand(appConfig, path, shell, params, CacheTTL)
 	return out, err
 }
 
@@ -50,8 +45,6 @@ func ModulesRoutes(c *gin.Context) {
 
 	} else {
 		output, _ := execScriptsGetJSON(module)
-		// fmt.Println("output77")
-		// fmt.Println(output)
 		c.String(http.StatusOK, output)
 	}
 
@@ -77,8 +70,8 @@ func getShellAndParams(cmd string, appConfig Config) (shell string, params []str
 	return shell, params, nil
 }
 
-// execShellCommand - execute shell command, returns bytes out and error
-func execShellCommand(appConfig Config, path string, shell string, params []string, cacheTTL *cache.Cache) (string, error) {
+// execCommand - execute shell command, returns bytes out and error
+func execCommand(appConfig Config, path string, shell string, params []string, cacheTTL *cache.Cache) (string, error) {
 	var (
 		out string
 		err error
@@ -136,14 +129,23 @@ func execShellCommand(appConfig Config, path string, shell string, params []stri
 		}
 	}
 	if appConfig.cache > 0 {
-		// if cacheErr := cacheTTL.SetBytes(req.RequestURI, shellOut, appConfig.cache); cacheErr != nil {
-		// 	log.Printf("set to cache failed: %s", cacheErr)
-		// }
 		cacheTTL.Set(fingerPrint, out, time.Duration(appConfig.cache)*time.Second)
 	}
-	// out = "-"
 	return out, err
 }
+
+var CommandTemplate = `
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>terminal-to-html Preview</title>
+		<link rel="stylesheet" href="static/css/terminal.css">
+	</head>
+	<body>
+		<div class="term-container">CONTENT</div>
+	</body>
+</html>
+`
 
 func initializeRoutes() {
 
@@ -180,6 +182,13 @@ func initializeRoutes() {
 	//download GET 请求输入页面
 	//download post请求真的下载 GET 请求输入页面
 	//command get 命令 post请求 真的执行
+	router.GET("/command", func(c *gin.Context) {
+		// result := "rrr"
+		c.Header("Content-Type", "text/html; charset=utf-8")
+		render(c, gin.H{"title": "Create New Article"}, "command.html")
+		// c.String(http.StatusOK, result)
+	})
+	//设置了个2s的容错cache 两秒内同一个命令，只输出一次的结果
 	router.POST("/command", func(c *gin.Context) {
 		if cmd, ok := c.GetPostForm("command"); ok {
 			path := ""
@@ -187,15 +196,25 @@ func initializeRoutes() {
 				path = r
 			}
 			fmt.Println(cmd)
+			appConfig.shell = "sh"
+			appConfig.defaultShOpt = "-c"
 			shell, params, err := getShellAndParams(cmd, appConfig)
 			if err != nil {
 				return
 			}
 			fmt.Printf("shell->%s,params-%s", shell, params)
-			shellOut, err := execShellCommand(appConfig, path, shell, params, CacheTTL)
+			appConfig.cache = 2
+			shellOut, err := execCommand(appConfig, path, shell, params, CacheTTL)
 			fmt.Println(shellOut)
-			// getShellHandler(appConfig, path, shell, params, cacheTTL)
-			c.String(http.StatusOK, shellOut)
+			// terminal.wrapPreview()
+			if _, ok := c.GetPostForm("html"); ok {
+				s := bytes.Replace([]byte(CommandTemplate), []byte("CONTENT"), []byte(shellOut), 1)
+				shellOut = string(s)
+				c.String(http.StatusOK, shellOut)
+			} else {
+				c.String(http.StatusOK, shellOut)
+			}
+
 		}
 	})
 

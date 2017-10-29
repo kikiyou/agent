@@ -195,7 +195,11 @@ func main() {
 	// 	"admin": "admin",
 	// })
 	router.SetHTMLTemplate(t)
-	router.StaticFS("/static", assetFS())
+	// router.StaticFS("/static", assetFS())
+
+	// 添加测试模板
+	router.LoadHTMLFiles("templates/command.html")
+	router.Static("/static", "./static")
 	// fmt.Println("##############")
 	// fmt.Println(*publicSharePath)
 	_publicDir := *publicSharePath
@@ -212,7 +216,7 @@ func main() {
 	})
 	//
 	// var CacheTTL *cache.Cache
-	appConfig.cache = 11
+	appConfig.cache = 1
 	if appConfig.cache > 0 {
 		CacheTTL = cache.New(5*time.Minute, 10*time.Minute)
 	}
