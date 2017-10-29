@@ -185,7 +185,7 @@ func initializeRoutes() {
 	router.GET("/command", func(c *gin.Context) {
 		// result := "rrr"
 		c.Header("Content-Type", "text/html; charset=utf-8")
-		render(c, gin.H{"title": "Create New Article"}, "command.html")
+		render(c, gin.H{"defaultPath": g.PublicPath}, "command.html")
 		// c.String(http.StatusOK, result)
 	})
 	//设置了个2s的容错cache 两秒内同一个命令，只输出一次的结果
