@@ -83,7 +83,7 @@ func shellLinux_json_apiSh() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "shell/linux_json_api.sh", size: 18358, mode: os.FileMode(493), modTime: time.Unix(1508753189, 0)}
+	info := bindataFileInfo{name: "shell/linux_json_api.sh", size: 18358, mode: os.FileMode(509), modTime: time.Unix(1509190076, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }

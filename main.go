@@ -25,7 +25,7 @@ var router *gin.Engine
 // var authorized gin.HandlerFunc
 
 // VERSION - version
-const VERSION = "0.0.2"
+const VERSION = "0.0.3"
 
 // shBasicAuthVar - name of env var for basic auth credentials
 const shBasicAuthVar = "SH_BASIC_AUTH"
@@ -169,6 +169,21 @@ func main() {
 	g.Collectors = collectors
 
 	// Process the templates at the start so that they don't have to be loaded
+
+	// var tmpl *Template
+	// if t == nil {
+	// 	t = New(name)
+	// }
+	// if name == t.Name() {
+	// 	tmpl = t
+	// } else {
+	// 	tmpl = t.New(name)
+	// }
+	// _, err = tmpl.Parse(s)
+	// if err != nil {
+	// 	return nil, err
+	// }
+
 	// from the disk again. This makes serving HTML pages very fast.
 	bytes, err := templates.Asset("templates/index.html") // 根据地址获取对应内容
 	if err != nil {
@@ -177,6 +192,12 @@ func main() {
 	}
 	t, err := template.New("index.html").Parse(string(bytes)) // 比如用于模板处理
 
+	bytes, err = templates.Asset("templates/command.html") // 根据地址获取对应内容
+	if err != nil {
+		log.Println(err)
+		// return
+	}
+	t, err = t.New("command.html").Parse(string(bytes))
 	bytes, err = shell.Asset("shell/linux_json_api.sh") // 根据地址获取对应内容
 	if err != nil {
 		log.Println(err)
@@ -195,11 +216,11 @@ func main() {
 	// 	"admin": "admin",
 	// })
 	router.SetHTMLTemplate(t)
-	// router.StaticFS("/static", assetFS())
+	router.StaticFS("/static", assetFS())
 
 	// 添加测试模板
-	router.LoadHTMLFiles("templates/command.html")
-	router.Static("/static", "./static")
+	// router.LoadHTMLFiles("templates/command.html")
+	// router.Static("/static", "./static")
 	// fmt.Println("##############")
 	// fmt.Println(*publicSharePath)
 	_publicDir := *publicSharePath
