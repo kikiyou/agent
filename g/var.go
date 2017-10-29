@@ -14,6 +14,7 @@ var (
 	Root            string
 	Collectors      map[string]collector.Collector
 	TempScriptsFile string
+	PublicPath      string
 )
 
 func CheckErr(e error) {

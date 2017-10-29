@@ -142,6 +142,7 @@ func main() {
 	// gin.SetMode(gin.ReleaseMode)
 
 	flag.Parse()
+	g.PublicPath = *publicSharePath
 	if *showVersion {
 		fmt.Fprintln(os.Stdout, VERSION)
 		os.Exit(0)

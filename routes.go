@@ -9,6 +9,7 @@ import (
 	"net/http"
 	"os/exec"
 	"path/filepath"
+	"strings"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -24,36 +25,44 @@ func execScriptsGetJSON(module string) (string, error) {
 	// var buf bytes.Buffer
 	// cmd.Stdout = &buf
 
-	cmd := exec.Command(g.TempScriptsFile, module)
-	// Use a bytes.Buffer to get the output
-	var buf bytes.Buffer
-	cmd.Stdout = &buf
-
-	cmd.Start()
-
-	// Use a channel to signal completion so we can use a select statement
-	done := make(chan error)
-	go func() { done <- cmd.Wait() }()
-
-	// Start a timer
-	timeout := time.After(10 * time.Second)
-
-	// The select statement allows us to execute based on which channel
-	// we get a message from first.
-	select {
-	case <-timeout:
-		// Timeout happened first, kill the process and print a message.
-		cmd.Process.Kill()
-		log.Printf("%s module: timeout,fail to killed", module)
-		out = fmt.Sprintf("%s module: timeout,fail to killed", module)
-	case err := <-done:
-		// Command completed before timeout. Print output and error if it exists.
-		out = buf.String()
-		if err != nil {
-			log.Printf("%s modele: Non-zero exit code:%s", module, err)
-			out = fmt.Sprintf("%s modele: Non-zero exit code:%s", module, err)
-		}
+	// cmd := exec.Command(g.TempScriptsFile, module)
+	cmd := fmt.Sprintf("%s %s", g.TempScriptsFile, module)
+	appConfig.cache = 10
+	path := "/tmp"
+	shell, params, err := getShellAndParams(cmd, appConfig)
+	if err != nil {
+		return "", err
 	}
+	out, err = execShellCommand(appConfig, path, shell, params, CacheTTL)
+	// // Use a bytes.Buffer to get the output
+	// var buf bytes.Buffer
+	// cmd.Stdout = &buf
+
+	// cmd.Start()
+
+	// // Use a channel to signal completion so we can use a select statement
+	// done := make(chan error)
+	// go func() { done <- cmd.Wait() }()
+
+	// // Start a timer
+	// timeout := time.After(10 * time.Second)
+
+	// // The select statement allows us to execute based on which channel
+	// // we get a message from first.
+	// select {
+	// case <-timeout:
+	// 	// Timeout happened first, kill the process and print a message.
+	// 	cmd.Process.Kill()
+	// 	log.Printf("%s module: timeout,fail to killed", module)
+	// 	out = fmt.Sprintf("%s module: timeout,fail to killed", module)
+	// case err := <-done:
+	// 	// Command completed before timeout. Print output and error if it exists.
+	// 	out = buf.String()
+	// 	if err != nil {
+	// 		log.Printf("%s modele: Non-zero exit code:%s", module, err)
+	// 		out = fmt.Sprintf("%s modele: Non-zero exit code:%s", module, err)
+	// 	}
+	// }
 	return out, err
 }
 
@@ -98,8 +107,7 @@ func getShellAndParams(cmd string, appConfig Config) (shell string, params []str
 }
 
 // execShellCommand - execute shell command, returns bytes out and error
-func execShellCommand(appConfig Config, shell string, params []string, cacheTTL *cache.Cache) (string, error) {
-
+func execShellCommand(appConfig Config, path string, shell string, params []string, cacheTTL *cache.Cache) (string, error) {
 	var (
 		out string
 		err error
@@ -107,8 +115,14 @@ func execShellCommand(appConfig Config, shell string, params []string, cacheTTL 
 	// appConfig.cache = 1
 	log.Println("###############################\n")
 	log.Println(appConfig.cache)
+	fingerStr := fmt.Sprintf("%s%s", shell, strings.Join(params[:], ","))
+	fingerPrint := g.MD5(fingerStr)
+	// fmt.Println(fingerStr)
+	// fmt.Println(fingerPrint)
+	// fingerprint=
+
 	if appConfig.cache > 0 {
-		if cacheData, found := cacheTTL.Get("foo"); !found {
+		if cacheData, found := cacheTTL.Get(fingerPrint); !found {
 			// log.Printf("get from cache failed: %s", err)
 			log.Println("no cache")
 		} else if found {
@@ -119,61 +133,11 @@ func execShellCommand(appConfig Config, shell string, params []string, cacheTTL 
 			return out, nil
 		}
 	}
-
-	// ctx := req.Context()
-	// if appConfig.timeout > 0 {
-	// 	var cancelFn context.CancelFunc
-	// 	ctx, cancelFn = context.WithTimeout(ctx, time.Duration(appConfig.timeout)*time.Second)
-	// 	defer cancelFn()
-	// }
-	// osExecCommand := exec.CommandContext(ctx, shell, params...) // #nosec
-
-	// proxySystemEnv(osExecCommand, appConfig)
-
-	// finalizer := func() {}
-	// if appConfig.setForm {
-	// 	var err error
-	// 	if finalizer, err = getForm(osExecCommand, req); err != nil {
-	// 		log.Printf("parse form failed: %s", err)
-	// 	}
-	// }
-
-	// if appConfig.setCGI {
-	// 	setCGIEnv(osExecCommand, req, appConfig)
-
-	// 	// get POST data to stdin of script (if not parse form vars above)
-	// 	if req.Method == "POST" && !appConfig.setForm {
-	// 		if stdin, pipeErr := osExecCommand.StdinPipe(); pipeErr != nil {
-	// 			log.Println("write POST data to shell failed:", pipeErr)
-	// 		} else {
-	// 			waitPipeWrite = true
-	// 			go func() {
-	// 				if _, pipeErr := io.Copy(stdin, req.Body); pipeErr != nil {
-	// 					pipeErrCh <- pipeErr
-	// 					return
-	// 				}
-	// 				pipeErrCh <- stdin.Close()
-	// 			}()
-	// 		}
-	// 	}
-	// }
-
-	// if appConfig.includeStderr {
-	// 	shellOut, err = osExecCommand.CombinedOutput()
-	// } else {
-	// 	osExecCommand.Stderr = os.Stderr
-	// 	shellOut, err = osExecCommand.Output()
-	// }
-
-	// if waitPipeWrite {
-	// 	if pipeErr := <-pipeErrCh; pipeErr != nil {
-	// 		log.Println("write POST data to shell failed:", pipeErr)
-	// 	}
-	// }
-
-	// finalizer()
-
 	cmd := exec.Command(shell, params...)
+	cmd.Dir = g.PublicPath
+	if path != "" {
+		cmd.Dir = path
+	}
 	// Use a bytes.Buffer to get the output
 	var buf bytes.Buffer
 	cmd.Stdout = &buf
@@ -207,7 +171,7 @@ func execShellCommand(appConfig Config, shell string, params []string, cacheTTL 
 		// if cacheErr := cacheTTL.SetBytes(req.RequestURI, shellOut, appConfig.cache); cacheErr != nil {
 		// 	log.Printf("set to cache failed: %s", cacheErr)
 		// }
-		cacheTTL.Set("foo", out, cache.NoExpiration)
+		cacheTTL.Set(fingerPrint, out, cache.NoExpiration)
 	}
 	// out = "-"
 	return out, err
@@ -264,13 +228,17 @@ func initializeRoutes() {
 	//command get 命令 post请求 真的执行
 	router.POST("/command", func(c *gin.Context) {
 		if cmd, ok := c.GetPostForm("command"); ok {
+			path := ""
+			if r, ok := c.GetPostForm("path"); ok {
+				path = r
+			}
 			fmt.Println(cmd)
 			shell, params, err := getShellAndParams(cmd, appConfig)
 			if err != nil {
 				return
 			}
 			fmt.Printf("shell->%s,params-%s", shell, params)
-			shellOut, err := execShellCommand(appConfig, shell, params, CacheTTL)
+			shellOut, err := execShellCommand(appConfig, path, shell, params, CacheTTL)
 			fmt.Println(shellOut)
 			// getShellHandler(appConfig, path, shell, params, cacheTTL)
 		}
