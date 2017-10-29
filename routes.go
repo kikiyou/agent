@@ -80,15 +80,15 @@ func execCommand(appConfig Config, path string, shell string, params []string, c
 		path = g.PublicPath
 	}
 	// appConfig.cache = 1
-	log.Println("###############################\n")
-	log.Println(appConfig.cache)
+	// log.Println("###############################\n")
+	// log.Println(appConfig.cache)
 	fingerStr := fmt.Sprintln(path, shell, strings.Join(params[:], ","))
 	fingerPrint := g.MD5(fingerStr)
 
 	if appConfig.cache > 0 {
 		if cacheData, found := cacheTTL.Get(fingerPrint); !found {
 			// log.Printf("get from cache failed: %s", err)
-			log.Println("no cache")
+			// log.Println("no cache")
 		} else if found {
 			// cache hit
 			log.Println("cache hit %s", fingerStr)
@@ -195,17 +195,17 @@ func initializeRoutes() {
 			if r, ok := c.GetPostForm("path"); ok {
 				path = r
 			}
-			fmt.Println(cmd)
+			// fmt.Println(cmd)
 			appConfig.shell = "sh"
 			appConfig.defaultShOpt = "-c"
 			shell, params, err := getShellAndParams(cmd, appConfig)
 			if err != nil {
 				return
 			}
-			fmt.Printf("shell->%s,params-%s", shell, params)
+			// fmt.Printf("shell->%s,params-%s", shell, params)
 			appConfig.cache = 2
 			shellOut, err := execCommand(appConfig, path, shell, params, CacheTTL)
-			fmt.Println(shellOut)
+			// fmt.Println(shellOut)
 			// terminal.wrapPreview()
 			if _, ok := c.GetPostForm("html"); ok {
 				s := bytes.Replace([]byte(CommandTemplate), []byte("CONTENT"), []byte(shellOut), 1)
