@@ -182,7 +182,7 @@ func initializeRoutes() {
 	//download GET 请求输入页面
 	//download post请求真的下载 GET 请求输入页面
 	//command get 命令 post请求 真的执行
-	router.GET("/command", func(c *gin.Context) {
+	router.GET("/command", authorized, func(c *gin.Context) {
 		// result := "rrr"
 		c.Header("Content-Type", "text/html; charset=utf-8")
 		render(c, gin.H{"defaultPath": g.PublicPath}, "command.html")
