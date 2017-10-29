@@ -10,90 +10,88 @@
 <link rel="stylesheet" href="static/css/style.css">
 </head>
 <body>
-<aside class="left-panel">
-                
-                
-<!-- Static navbar -->
-<nav class="navbar navbar-fixed-top navbar-inverse">
-	<div class="container">
-  		<div class="navbar-header">
-    		<span class="navbar-brand brand-title navbar-left">黑暗之门<span class="blinking-cursor">&#x25ae;</span></span>
-    	</div>
-    	<div id="navbar" class="navbar-collapse collapse">
-    	<ul class="nav navbar-nav">
-			<li class="dropdown">
-				<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Command Set <span class="caret"></span></a>
-				<ul id="listCommandSet" class="dropdown-menu">
-					<?php require_once('listCommandSet.php'); ?>
-				</ul>
-			</li>
-      	</ul>
-
-      	<button id="addCommand" class="btn btn-success navbar-btn">Add <span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span></button>
-      	<button id="deleteCommand" class="btn btn-danger navbar-btn">Delete <span class="glyphicon glyphicon-trash" aria-hidden="true"></span></button>
-      	<ul class="nav navbar-nav navbar-right">
-      		<div class="navbar-form navbar-right">
-	     		<form id="runCommandForm" class="form-group">
-					<input id="command" name="command" type="text" size="60" class="form-control" placeholder="请在这里输入Shell命令来运行">
-                    <input id="html" name="html" value="1" hidden="true" >
-                    <!-- div class="checkbox navbar-btn">
-			            <label class="navbar-link">
-			                <input type="checkbox" name="commandIsDynamic">
-			                	<a class="tooltips" href="#">Dynamic/Interactive
-								<span>Check this for:<br>1. Commands requiring dynamic updates (<i>ex: tail, top</i>)<br>2. Commands requiring interaction (<i>ex: vi, bash, ssh</i>)</span>
-								</a>
-			            </label>
-        			</div-->
-		  			<button id="runCommand" class="btn btn-primary">执行 <span class="glyphicon glyphicon-play-circle" aria-hidden="true"></span></button>
-	  			</form>
-	  		</div>
-      	</ul>
-
-		</div><!--/.nav-collapse -->
-  	</div>
-</nav>
+        <aside class="left-panel">
+    <!-- Static navbar -->
+<nav class="navbar navbar-static-top navbar-inverse">
+        <div class="container">
+              <div class="navbar-header">
+                <span class="navbar-brand brand-title">黑暗之门<span class="blinking-cursor">&#x25ae;</span></span>
+            </div>
+            <div id="navbar" class="navbar-collapse collapse">
+            <ul class="nav navbar-nav">
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Command Set <span class="caret"></span></a>
+                    <ul id="listCommandSet" class="dropdown-menu">
+                        <?php require_once('listCommandSet.php'); ?>
+                    </ul>
+                </li>
+              </ul>
+    
+              <button id="addCommand" class="btn btn-success navbar-btn">Add <span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span></button>
+              <button id="deleteCommand" class="btn btn-danger navbar-btn">Delete <span class="glyphicon glyphicon-trash" aria-hidden="true"></span></button>
+              <ul class="nav navbar-nav navbar-right">
+                  <div class="navbar-form navbar-right">
+                     <form id="runCommandForm" class="form-group">
+                        <input id="command" name="command" type="text" size="60" class="form-control" placeholder="请在这里输入Shell命令来运行">
+                        <input id="html" name="html" value="1" hidden="true" >                        
+                          <!-- div class="checkbox navbar-btn">
+                            <label class="navbar-link">
+                                <input type="checkbox" name="oneTimeCommandIsDynamic">
+                                    <a class="tooltips" href="#">Dynamic/Interactive
+                                    <span>Check this for:<br>1. Commands requiring dynamic updates (<i>ex: tail, top</i>)<br>2. Commands requiring interaction (<i>ex: vi, bash, ssh</i>)</span>
+                                    </a>
+                            </label>
+                        </div -->
+                          <button id="runCommand" class="btn btn-primary">执行 <span class="glyphicon glyphicon-play-circle" aria-hidden="true"></span></button>
+                      </form>
+                  </div>
+              </ul>
+    
+            </div><!--/.nav-collapse -->
+          </div>
+    </nav>
 </aside>
-<!-- Aside Ends-->
-
-<!-- Add command form -->
-<div id="overlayBackground" class="overlay-back"></div>
-<div id="overlayMain" class="overlay-div">
-	<a href="#"><span onclick="$('#overlayMain, #overlayBackground').fadeOut()" style="font-size: 1.5em;" class="fa fa-close pull-right"></span></a>
-	<div class="panel panel-default">
-	    <div class="panel-heading" style="text-align: center">
-			<span class="panel-title"><strong>Add a command to the set</strong></span>
-	    </div> 	<!-- End of panel heading -->
-	    <form id="addCommandForm" style="padding: 5px">
-			<div id="inputgroup1" class="input-group">
-				<span class="input-group-addon"><span class="glyphicon glyphicon-console" aria-hidden="true"></span></span>
-				<input id="command" name="command" type="text" maxlength="255" class="form-control" placeholder="Type in the command" autocomplete="off" autofocus>
-			</div>
-			<div id="commandFeedback" class="text-center feedback"></div>
-			<br>
-			<div id="inputgroup2" class="input-group">
-				<span class="input-group-addon"><span class="fa fa-tags" aria-hidden="true"></span></span>
-				<input id="label" name="label" type="text" maxlength="30" placeholder="Label for this command" autocomplete="off" class="form-control">
-			</div>
-			<div id="labelFeedback" class="text-center feedback"></div>
-			<br>
-			<div style="text-align: center">
-				<input type="checkbox" id="isDynamic" name="isDynamic">
-				<a class="tooltips" href="#">Dynamic/Interactive
-					<span>Check this for:<br>1. Commands requiring dynamic updates (<i>ex: tail, top</i>)<br>2. Commands requiring interaction (<i>ex: vi, bash, ssh</i>)</span>
-				</a>
-				<div id="isDynamicFeedback" class="text-center feedback"></div>
-			</div>
-			<br>
-			<div class="text-center"><button id="submit" type="button" class="btn btn-sm btn-primary">Save <span class="glyphicon glyphicon-save" aria-hidden="true"></span></button></div>
-		</form>
-	</div> <!-- End of panel -->
-</div> <!-- End of overlay -->
-
-<div id="terminal" class="maindiv">
-	<div class="img-container">
-		<img src="static/img/terminal.png">
-	</div>
-</div>
+<!-- Aside Ends-->    
+    
+    <!-- Add command form -->
+    <div id="overlayBackground" class="overlay-back"></div>
+    <div id="overlayMain" class="overlay-div">
+        <a href="#"><span onclick="$('#overlayMain, #overlayBackground').fadeOut()" style="font-size: 1.5em;" class="fa fa-close pull-right"></span></a>
+        <div class="panel panel-default">
+            <div class="panel-heading" style="text-align: center">
+                <span class="panel-title"><strong>Add a command to the set</strong></span>
+            </div> 	<!-- End of panel heading -->
+            <form id="addCommandForm" style="padding: 5px">
+                <div id="inputgroup1" class="input-group">
+                    <span class="input-group-addon"><span class="glyphicon glyphicon-console" aria-hidden="true"></span></span>
+                    <input id="command" name="command" type="text" maxlength="255" class="form-control" placeholder="Type in the command" autocomplete="off" autofocus>
+                </div>
+                <div id="commandFeedback" class="text-center feedback"></div>
+                <br>
+                <div id="inputgroup2" class="input-group">
+                    <span class="input-group-addon"><span class="fa fa-tags" aria-hidden="true"></span></span>
+                    <input id="label" name="label" type="text" maxlength="30" placeholder="Label for this command" autocomplete="off" class="form-control">
+                </div>
+                <div id="labelFeedback" class="text-center feedback"></div>
+                <br>
+                <div style="text-align: center">
+                    <input type="checkbox" id="isDynamic" name="isDynamic">
+                    <a class="tooltips" href="#">Dynamic/Interactive
+                        <span>Check this for:<br>1. Commands requiring dynamic updates (<i>ex: tail, top</i>)<br>2. Commands requiring interaction (<i>ex: vi, bash, ssh</i>)</span>
+                    </a>
+                    <div id="isDynamicFeedback" class="text-center feedback"></div>
+                </div>
+                <br>
+                <div class="text-center"><button id="submit" type="button" class="btn btn-sm btn-primary">Save <span class="glyphicon glyphicon-save" aria-hidden="true"></span></button></div>
+            </form>
+        </div> <!-- End of panel -->
+    </div> <!-- End of overlay -->
+    
+    <div id="terminal" class="maindiv">
+        <div class="img-container">
+            <img src="img/terminal.png">
+        </div>
+    </div>
 
 <!-- All javascript scripts -->
 <script src="https://cdn.bootcss.com/jquery/2.1.4/jquery.min.js"></script>
