@@ -25,7 +25,7 @@ var router *gin.Engine
 // var authorized gin.HandlerFunc
 
 // VERSION - version
-const VERSION = "0.0.3"
+const VERSION = "0.0.3.1"
 
 // shBasicAuthVar - name of env var for basic auth credentials
 const shBasicAuthVar = "SH_BASIC_AUTH"
