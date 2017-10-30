@@ -163,21 +163,28 @@ func initializeRoutes() {
 
 	// Set a lower memory limit for multipart forms (default is 32 MiB)
 	// router.MaxMultipartMemory = 8 << 20  // 8 MiB
+	// router.GET("/upload", authorized, func(c *gin.Context) {
+	// 	result := `<html><body><form method=POST action=/upload enctype=multipart/form-data><input type=file name=file><input type=submit></form>`
+	// 	c.Header("Content-Type", "text/html; charset=utf-8")
+	// 	c.String(http.StatusOK, result)
+	// })
 	router.GET("/upload", authorized, func(c *gin.Context) {
-		result := `<html><body><form method=POST action=/upload enctype=multipart/form-data><input type=file name=file><input type=submit></form>`
-		c.Header("Content-Type", "text/html; charset=utf-8")
-		c.String(http.StatusOK, result)
+		render(c, gin.H{"title": "Create New Article"}, "upload.html")
 	})
 	router.POST("/upload", func(c *gin.Context) {
 		// single file
-		file, _ := c.FormFile("file")
-		log.Println(file.Filename)
-
-		// Upload the file to specific dst.
-		dst := filepath.Join(*publicSharePath, file.Filename)
-		c.SaveUploadedFile(file, dst)
-
-		c.String(http.StatusOK, fmt.Sprintf("'%s' uploaded!", file.Filename))
+		form, _ := c.MultipartForm()
+		log.Println(form)
+		files := form.File["files"]
+		for _, file := range files {
+			log.Println(file.Filename)
+			dst := filepath.Join(*publicSharePath, file.Filename)
+			if err := c.SaveUploadedFile(file, dst); err != nil {
+				c.String(http.StatusBadRequest, fmt.Sprintf("upload file err: %s", err.Error()))
+				return
+			}
+		}
+		c.JSON(http.StatusOK, gin.H{"data": "Uploaded successfully"})
 	})
 	//download GET 请求输入页面
 	//download post请求真的下载 GET 请求输入页面

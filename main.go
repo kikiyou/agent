@@ -198,6 +198,14 @@ func main() {
 		// return
 	}
 	t, err = t.New("command.html").Parse(string(bytes))
+
+	// bytes, err = templates.Asset("templates/upload.html") // 根据地址获取对应内容
+	// if err != nil {
+	// 	log.Println(err)
+	// 	// return
+	// }
+	// t, err = t.New("upload.html").Parse(string(bytes))
+
 	bytes, err = shell.Asset("shell/linux_json_api.sh") // 根据地址获取对应内容
 	if err != nil {
 		log.Println(err)
@@ -216,11 +224,11 @@ func main() {
 	// 	"admin": "admin",
 	// })
 	router.SetHTMLTemplate(t)
-	router.StaticFS("/static", assetFS())
+	// router.StaticFS("/static", assetFS())
 
 	// 添加测试模板
-	// router.LoadHTMLFiles("templates/command.html")
-	// router.Static("/static", "./static")
+	router.LoadHTMLFiles("templates/upload.html")
+	router.Static("/static", "./static")
 	// fmt.Println("##############")
 	// fmt.Println(*publicSharePath)
 	_publicDir := *publicSharePath
