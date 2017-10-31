@@ -159,15 +159,10 @@ func initializeRoutes() {
 	})
 	// router.GET("/", ensureLoggedIn(), showIndexPage)
 	router.GET("/", authorized, showIndexPage)
+	router.GET("index", authorized, showIndexPage)
+	router.GET("/dash", authorized, showDash)
 	router.GET("/server", ModulesRoutes)
 
-	// Set a lower memory limit for multipart forms (default is 32 MiB)
-	// router.MaxMultipartMemory = 8 << 20  // 8 MiB
-	// router.GET("/upload", authorized, func(c *gin.Context) {
-	// 	result := `<html><body><form method=POST action=/upload enctype=multipart/form-data><input type=file name=file><input type=submit></form>`
-	// 	c.Header("Content-Type", "text/html; charset=utf-8")
-	// 	c.String(http.StatusOK, result)
-	// })
 	router.GET("/upload", authorized, func(c *gin.Context) {
 		render(c, gin.H{"title": "Create New Article"}, "upload.html")
 	})

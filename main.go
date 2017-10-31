@@ -227,7 +227,7 @@ func main() {
 	// router.StaticFS("/static", assetFS())
 
 	// 添加测试模板
-	router.LoadHTMLFiles("templates/upload.html")
+	router.LoadHTMLFiles("templates/index.html", "templates/upload.html", "templates/dash.html", "templates/command.html")
 	router.Static("/static", "./static")
 	// fmt.Println("##############")
 	// fmt.Println(*publicSharePath)
