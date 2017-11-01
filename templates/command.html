@@ -5,8 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>黑暗之门</title>
     <!-- Bootstrap -->
-    <link rel="stylesheet" href="https://cdn.bootcss.com/bootstrap/3.3.5/css/bootstrap.min.css">
-    <link rel="stylesheet" href="https://cdn.bootcss.com/bootstrap/3.3.5/css/bootstrap-theme.min.css">
+    <link rel="stylesheet" href="static/command/bootstrap.min.css">
+    <link rel="stylesheet" href="static/command/bootstrap-theme.min.css">
     <link rel="stylesheet" href="static/css/font-awesome.min.css">
     <link rel="stylesheet" href="static/css/style.css">
     <link rel="shortcut icon" href="static/favicon.ico" type="image/x-icon">
@@ -26,6 +26,9 @@
                         <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">常用命令集 <span class="caret"></span></a>
                         <ul id="listCommandSet" class="dropdown-menu">
                             <!-- ?php require_once('listCommandSet.php'); ?-->
+                            <li>
+                                <a data-command-id="4">列出缓存</a>
+                            </li>
                         </ul>
                     </li>
                 </ul>
@@ -38,9 +41,9 @@
                             {{if .defaultPath}}
                             <label class="navbar-text">执行目录：</label>
                             <input id="path" name="path" type="text" class="form-control input-sm" size="20" value="{{.defaultPath}}"> {{end}}
+                            <span>.  .</span>
                             <b>
-                            <span >.  .</span>
-                        <input id="command" name="command" type="text" size="60" class="form-control" placeholder="请在这里输入Shell命令来运行">
+                            <input id="command" name="command" type="text" size="60" class="form-control" placeholder="请在这里输入Shell命令来运行">
                         </b>
                             <input id="html" name="html" value="1" hidden="true">
                             <!-- div class="checkbox navbar-btn">
@@ -205,8 +208,9 @@
                 window.document.title = $(this).text();
 
                 $.ajax({
-                    url: "runCommand.php?commandID=" + commandID,
-                    type: "GET",
+                    url: "command",
+                    data: "commandID=" + commandID + "&html=1",
+                    type: "POST",
                     success: function(data) {
                         // If the command is successful, update the terminal div
                         $('#terminal').html(data);

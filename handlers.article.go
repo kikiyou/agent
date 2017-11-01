@@ -8,15 +8,11 @@ import (
 )
 
 func showIndexPage(c *gin.Context) {
-	// articles := getAllArticles()
-	// bytes, err := templates.Asset("templates/index.html") // 根据地址获取对应内容
-	// if err != nil {
-	// 	fmt.Println(err)
-	// 	return
-	// }
-
-	// Call the render function with the name of the template to render
 	render(c, gin.H{"title": "Create New Article"}, "index.html")
+}
+
+func showDash(c *gin.Context) {
+	render(c, gin.H{"title": "Create New Article"}, "dash.html")
 }
 
 // func showArticleCreationPage(c *gin.Context) {
