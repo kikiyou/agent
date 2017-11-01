@@ -15,6 +15,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/kikiyou/agent/g"
 	shellwords "github.com/mattn/go-shellwords"
+	_ "github.com/mattn/go-sqlite3"
 	cache "github.com/patrickmn/go-cache"
 )
 
@@ -110,7 +111,7 @@ func execCommand(appConfig Config, path string, shell string, params []string, c
 	go func() { done <- cmd.Wait() }()
 
 	// Start a timer
-	timeout := time.After(10 * time.Second)
+	timeout := time.After(20 * time.Minute)
 
 	// The select statement allows us to execute based on which channel
 	// we get a message from first.
@@ -184,31 +185,68 @@ func initializeRoutes() {
 	//download GET 请求输入页面
 	//download post请求真的下载 GET 请求输入页面
 	//command get 命令 post请求 真的执行
-	router.GET("/command", authorized, func(c *gin.Context) {
+
+	router.GET("/cli", authorized, func(c *gin.Context) {
 		// result := "rrr"
 		c.Header("Content-Type", "text/html; charset=utf-8")
 		render(c, gin.H{"defaultPath": g.PublicPath}, "command.html")
 		// c.String(http.StatusOK, result)
 	})
+	// router.GET("/command/:commandID", func(c *gin.Context) {
+	// 	name := c.Param("name")
+	// 	c.String(http.StatusOK, "Hello %s", name)
+	// 	// c.Header("Content-Type", "text/html; charset=utf-8")
+	// 	// render(c, gin.H{"defaultPath": g.PublicPath}, "command.html")
+	// 	// c.String(http.StatusOK, result)
+	// })
 	//设置了个2s的容错cache 两秒内同一个命令，只输出一次的结果
 	router.POST("/command", func(c *gin.Context) {
-		if cmd, ok := c.GetPostForm("command"); ok {
-			path := ""
+		var (
+			shellOut string
+			path     string
+			cmd      string
+		)
+
+		if command, ok := c.GetPostForm("command"); ok {
 			if r, ok := c.GetPostForm("path"); ok {
 				path = r
 			}
-			// fmt.Println(cmd)
+			cmd = command
+		}
+		if commandID, ok := c.GetPostForm("commandID"); ok {
+			fmt.Println(commandID)
+			//查询数据
+			// db, err := sql.Open("sqlite3", "db/command_set.sqlite3")
+			// g.CheckErr(err)
+
+			// rows, err := db.Query("SELECT * FROM COMMANDS")
+			// g.CheckErr(err)
+
+			// for rows.Next() {
+			// 	var ID int
+			// 	var COMMAND string
+			// 	var LABEL string
+			// 	var ISDYNAMIC int
+			// 	err = rows.Scan(&ID, &COMMAND, &LABEL, &ISDYNAMIC)
+			// 	g.CheckErr(err)
+			// 	fmt.Println(ID)
+			// 	fmt.Println(COMMAND)
+			// 	fmt.Println(LABEL)
+			// 	fmt.Println(ISDYNAMIC)
+			// }
+			cmd = "ls -l /"
+
+		}
+		if cmd != "" {
 			appConfig.shell = "sh"
 			appConfig.defaultShOpt = "-c"
 			shell, params, err := getShellAndParams(cmd, appConfig)
 			if err != nil {
 				return
 			}
-			// fmt.Printf("shell->%s,params-%s", shell, params)
 			appConfig.cache = 2
-			shellOut, err := execCommand(appConfig, path, shell, params, CacheTTL)
-			// fmt.Println(shellOut)
-			// terminal.wrapPreview()
+			shellOut, err = execCommand(appConfig, path, shell, params, CacheTTL)
+
 			if _, ok := c.GetPostForm("html"); ok {
 				s := bytes.Replace([]byte(CommandTemplate), []byte("CONTENT"), []byte(shellOut), 1)
 				shellOut = string(s)
@@ -216,8 +254,8 @@ func initializeRoutes() {
 			} else {
 				c.String(http.StatusOK, shellOut)
 			}
-
 		}
+
 	})
 
 }

@@ -192,6 +192,13 @@ func main() {
 	}
 	t, err := template.New("index.html").Parse(string(bytes)) // 比如用于模板处理
 
+	bytes, err = templates.Asset("templates/dash.html") // 根据地址获取对应内容
+	if err != nil {
+		log.Println(err)
+		// return
+	}
+	t, err = t.New("dash.html").Parse(string(bytes)) // 比如用于模板处理
+
 	bytes, err = templates.Asset("templates/command.html") // 根据地址获取对应内容
 	if err != nil {
 		log.Println(err)
@@ -199,12 +206,12 @@ func main() {
 	}
 	t, err = t.New("command.html").Parse(string(bytes))
 
-	// bytes, err = templates.Asset("templates/upload.html") // 根据地址获取对应内容
-	// if err != nil {
-	// 	log.Println(err)
-	// 	// return
-	// }
-	// t, err = t.New("upload.html").Parse(string(bytes))
+	bytes, err = templates.Asset("templates/upload.html") // 根据地址获取对应内容
+	if err != nil {
+		log.Println(err)
+		// return
+	}
+	t, err = t.New("upload.html").Parse(string(bytes))
 
 	bytes, err = shell.Asset("shell/linux_json_api.sh") // 根据地址获取对应内容
 	if err != nil {
@@ -223,7 +230,7 @@ func main() {
 	// authorized = gin.BasicAuth(gin.Accounts{
 	// 	"admin": "admin",
 	// })
-	router.SetHTMLTemplate(t)
+	// router.SetHTMLTemplate(t)
 	// router.StaticFS("/static", assetFS())
 
 	// 添加测试模板
