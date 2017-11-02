@@ -3,10 +3,12 @@
 package main
 
 import (
+	"fmt"
 	"net/http"
 
 	"github.com/gin-gonic/contrib/sessions"
 	"github.com/gin-gonic/gin"
+	"github.com/kikiyou/agent/g"
 )
 
 func ensureLoggedIn() gin.HandlerFunc {
@@ -15,10 +17,16 @@ func ensureLoggedIn() gin.HandlerFunc {
 		// the user is not logged in
 		loggedInInterface, _ := c.Get("is_logged_in")
 		loggedIn := loggedInInterface.(bool)
+		fmt.Printf("ensureLoggedIn %s", loggedIn)
 		if !loggedIn {
 			//if token, err := c.Cookie("token"); err != nil || token == "" {
-			c.Redirect(301, "/u/login")
-			c.AbortWithStatus(http.StatusUnauthorized)
+			g.Render(c, gin.H{
+				"title": "Login",
+			}, "login.html")
+			// c.AbortWithStatus(http.StatusUnauthorized)
+			// c.HTML(http.StatusOK, "index.html", "")
+			// fmt.Println("cccc")
+			c.Abort()
 		}
 	}
 }
@@ -31,10 +39,11 @@ func ensureNotLoggedIn() gin.HandlerFunc {
 		// the user is already logged in
 		loggedInInterface, _ := c.Get("is_logged_in")
 		loggedIn := loggedInInterface.(bool)
+		fmt.Printf("ensureNotLoggedIn %s", loggedIn)
 		if loggedIn {
-			// if token, err := c.Cookie("token"); err == nil || token != "" {
-			c.Redirect(301, "/")
-			// c.AbortWithStatus(http.StatusUnauthorized)
+			// c.HTML(http.StatusOK, "index.html", "")
+			// c.Abort()
+			c.AbortWithStatus(http.StatusUnauthorized)
 		}
 	}
 }

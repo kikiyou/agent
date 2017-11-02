@@ -9,12 +9,14 @@ import (
 	"net/http"
 	"path/filepath"
 
+	"golang.org/x/crypto/bcrypt"
+
 	"github.com/gin-gonic/contrib/sessions"
 	"github.com/gin-gonic/gin"
 	"github.com/kikiyou/agent/controllers"
 	"github.com/kikiyou/agent/forms"
 	"github.com/kikiyou/agent/g"
-	_ "github.com/mattn/go-sqlite3"
+	// _ "github.com/mattn/go-sqlite3"
 )
 
 func execScriptsGetJSON(module string) (string, error) {
@@ -84,6 +86,12 @@ func initializeRoutes() {
 	router.Use(CORSMiddleware())
 
 	store := sessions.NewCookieStore([]byte("secret"))
+	// store.Options(sessions.Options{
+	// 	MaxAge:   86400, //24H
+	// 	Secure:   true,
+	// 	HttpOnly: true,
+	// 	Path:     "/*",
+	// })
 	router.Use(sessions.Sessions("fsv_agent", store))
 
 	// Use the setUserStatus middleware for every route to set a flag
@@ -97,8 +105,8 @@ func initializeRoutes() {
 	u := router.Group("/u")
 	{
 		user := new(controllers.UserController)
-		u.GET("/login", ensureNotLoggedIn(), user.ShowLoginPage)
-		u.POST("/login", ensureNotLoggedIn(), user.Login)
+		u.GET("/login", user.ShowLoginPage)
+		u.POST("/login", user.Login)
 	}
 	// Handle the index route
 	// router.GET("/", ensureLoggedIn(), showIndexPage)
@@ -156,55 +164,65 @@ func initializeRoutes() {
 			c.Abort()
 			return
 		}
-		if command, ok := c.GetPostForm("command"); ok {
-			if r, ok := c.GetPostForm("path"); ok {
-				path = r
-			}
-			cmd = command
-		}
-		if commandID, ok := c.GetPostForm("commandID"); ok {
-			fmt.Println(commandID)
-			//查询数据
-			// db, err := sql.Open("sqlite3", "db/command_set.sqlite3")
-			// g.CheckErr(err)
 
-			// rows, err := db.Query("SELECT * FROM COMMANDS")
-			// g.CheckErr(err)
-
-			// for rows.Next() {
-			// 	var ID int
-			// 	var COMMAND string
-			// 	var LABEL string
-			// 	var ISDYNAMIC int
-			// 	err = rows.Scan(&ID, &COMMAND, &LABEL, &ISDYNAMIC)
-			// 	g.CheckErr(err)
-			// 	fmt.Println(ID)
-			// 	fmt.Println(COMMAND)
-			// 	fmt.Println(LABEL)
-			// 	fmt.Println(ISDYNAMIC)
-			// }
-			cmd = "ls -l /"
-
-		}
-		if cmd != "" {
-			// g.AppConfig.Shell = "sh"
-			// g.AppConfig.DefaultShOpt = "-c"
-			shell, params, err := g.GetShellAndParams(cmd, g.AppConfig)
+		if hashedToken, ok := c.GetPostForm("token"); ok {
+			tokenStr := g.GetTokenStr()
+			err := bcrypt.CompareHashAndPassword([]byte(hashedToken), []byte(tokenStr))
 			if err != nil {
+				c.JSON(406, gin.H{"message": "无效的token"})
+				c.Abort()
 				return
 			}
-			// g.AppConfig.Cache = 2
-			shellOut, err = g.ExecCommand(g.AppConfig, path, shell, params, CacheTTL)
 
-			if _, ok := c.GetPostForm("html"); ok {
-				s := bytes.Replace([]byte(CommandTemplate), []byte("CONTENT"), []byte(shellOut), 1)
-				shellOut = string(s)
-				c.String(http.StatusOK, shellOut)
-			} else {
-				c.String(http.StatusOK, shellOut)
+			if command, ok := c.GetPostForm("command"); ok {
+				if r, ok := c.GetPostForm("path"); ok {
+					path = r
+				}
+				cmd = command
+			}
+			if commandID, ok := c.GetPostForm("commandID"); ok {
+				fmt.Println(commandID)
+				//查询数据
+				// db, err := sql.Open("sqlite3", "db/command_set.sqlite3")
+				// g.CheckErr(err)
+
+				// rows, err := db.Query("SELECT * FROM COMMANDS")
+				// g.CheckErr(err)
+
+				// for rows.Next() {
+				// 	var ID int
+				// 	var COMMAND string
+				// 	var LABEL string
+				// 	var ISDYNAMIC int
+				// 	err = rows.Scan(&ID, &COMMAND, &LABEL, &ISDYNAMIC)
+				// 	g.CheckErr(err)
+				// 	fmt.Println(ID)
+				// 	fmt.Println(COMMAND)
+				// 	fmt.Println(LABEL)
+				// 	fmt.Println(ISDYNAMIC)
+				// }
+				cmd = "ls -l /"
+
+			}
+			if cmd != "" {
+				// g.AppConfig.Shell = "sh"
+				// g.AppConfig.DefaultShOpt = "-c"
+				shell, params, err := g.GetShellAndParams(cmd, g.AppConfig)
+				if err != nil {
+					return
+				}
+				// g.AppConfig.Cache = 2
+				shellOut, err = g.ExecCommand(g.AppConfig, path, shell, params, CacheTTL)
+
+				if _, ok := c.GetPostForm("html"); ok {
+					s := bytes.Replace([]byte(CommandTemplate), []byte("CONTENT"), []byte(shellOut), 1)
+					shellOut = string(s)
+					c.String(http.StatusOK, shellOut)
+				} else {
+					c.String(http.StatusOK, shellOut)
+				}
 			}
 		}
-
 	})
 
 }

@@ -1,6 +1,8 @@
 package controllers
 
 import (
+	"net/http"
+
 	"github.com/gin-gonic/contrib/sessions"
 	"github.com/gin-gonic/gin"
 	"github.com/kikiyou/agent/forms"
@@ -37,11 +39,14 @@ func (ctrl UserController) Login(c *gin.Context) {
 		session.Set("user_role", user.Role)
 		session.Save()
 		c.Set("is_logged_in", true)
+		c.HTML(http.StatusOK, "index.html", "")
 		// c.RedirectRedirects()
-		c.Redirect(301, "/index")
+		// c.Redirect(301, "/index")
 		// c.JSON(200, gin.H{"message": "User signed in", "user": user})
 	} else {
 		c.JSON(406, gin.H{"message": "登录失败", "error": err.Error()})
+		c.Abort()
+		return
 	}
 
 }
