@@ -74,16 +74,12 @@ func ExecCommand(appConfig Config, path string, shell string, params []string, c
 	if path == "" {
 		path = appConfig.PublicDir
 	}
-	// AppConfig.cache = 1
-	// log.Println("###############################\n")
-	// log.Println(AppConfig.cache)
+
 	fingerStr := fmt.Sprintln(path, shell, strings.Join(params[:], ","))
 	fingerPrint := MD5(fingerStr)
 
 	if appConfig.Cache > 0 {
 		if cacheData, found := cacheTTL.Get(fingerPrint); !found {
-			// log.Printf("get from cache failed: %s", err)
-			// log.Println("no cache")
 		} else if found {
 			// cache hit
 			log.Println("cache hit %s", fingerStr)
