@@ -6,27 +6,11 @@ import (
 	"log"
 	"os"
 	"path/filepath"
+	"runtime"
 	"strings"
 
 	"github.com/kikiyou/agent/collector"
 )
-
-func LoadCollectors(appConfig Config) (map[string]collector.Collector, error) {
-	collectors := map[string]collector.Collector{}
-
-	for _, name := range strings.Split(appConfig.EnabledCollectors, ",") {
-		fn, ok := collector.Factories[name]
-		if !ok {
-			log.Fatalf("Collector '%s' not available", name)
-		}
-		c, err := fn()
-		if err != nil {
-			return nil, err
-		}
-		collectors[name] = c
-	}
-	return collectors, nil
-}
 
 // Config - config struct
 type Config struct {
@@ -43,6 +27,7 @@ type Config struct {
 	AddExit           bool   // add /exit command
 	PublicDir         string // 共享目录
 	EnabledCollectors string
+	Collectors        map[string]collector.Collector
 }
 
 func getConfig() (appConfig Config, err error) {
@@ -56,8 +41,18 @@ func getConfig() (appConfig Config, err error) {
 		enabledCollectors = flag.String("enabledCollectors", "current_ram,load_avg", "comma-seperated list of collectors to use")
 		publicSharePath   = flag.String("public", filepath.Join(Root, "public"), "public share dir")
 		printCollectors   = flag.Bool("printCollectors", false, "If true, print available collectors and exit")
+		cache             = flag.Int("cache", 2, "设定cache默认是:2")
 	)
 	flag.Parse()
+
+	switch runtime.GOOS {
+	case "plan9":
+		appConfig.DefaultShell, appConfig.DefaultShOpt = defaultShellPlan9, "-c"
+	case "windows":
+		appConfig.DefaultShell, appConfig.DefaultShOpt = defaultShellWindows, "/C"
+	default:
+		appConfig.DefaultShell, appConfig.DefaultShOpt = defaultShellPOSIX, "-c"
+	}
 
 	if *showVersion {
 		fmt.Fprintln(os.Stdout, VERSION)
@@ -85,6 +80,9 @@ func getConfig() (appConfig Config, err error) {
 	appConfig.ListeningAddress = *listeningAddress
 	appConfig.PublicDir = *publicSharePath
 	appConfig.EnabledCollectors = *enabledCollectors
+	appConfig.Shell = appConfig.DefaultShell
+	appConfig.Cache = *cache
+	// appConfig.DefaultShOpt = "-c"
 	// var c Config
 	// lock.Lock()
 	// defer lock.Unlock()

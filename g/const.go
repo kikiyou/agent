@@ -26,3 +26,6 @@ const defaultShellPOSIX = "sh"
 
 // defaultShellWindows - shell executable by default in Windows
 const defaultShellWindows = "cmd"
+
+// defaultShellPlan9 - shell executable by default in Plan9
+const defaultShellPlan9 = "rc"

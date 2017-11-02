@@ -7,9 +7,11 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"strings"
 	"time"
 
 	"github.com/gin-gonic/gin"
+	"github.com/kikiyou/agent/collector"
 	"github.com/kikiyou/agent/g"
 	"github.com/kikiyou/agent/shell"
 	"github.com/kikiyou/agent/templates"
@@ -22,14 +24,29 @@ var router *gin.Engine
 
 var CacheTTL *cache.Cache
 
+func loadCollectors(appConfig g.Config) (map[string]collector.Collector, error) {
+	collectors := map[string]collector.Collector{}
+
+	for _, name := range strings.Split(g.AppConfig.EnabledCollectors, ",") {
+		fn, ok := collector.Factories[name]
+		if !ok {
+			log.Fatalf("Collector '%s' not available", name)
+		}
+		c, err := fn()
+		if err != nil {
+			return nil, err
+		}
+		collectors[name] = c
+	}
+	return collectors, nil
+}
+
 func main() {
 	// Set Gin to production mode
 	// gin.SetMode(gin.ReleaseMode)
 
-	// g.PublicPath = *publicSharePath
-
 	fmt.Println(g.AppConfig)
-	collectors, err := g.LoadCollectors(g.AppConfig)
+	collectors, err := loadCollectors(g.AppConfig)
 	if err != nil {
 		log.Fatalf("Couldn't load config and collectors: %s", err)
 	}
