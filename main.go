@@ -44,7 +44,12 @@ func loadCollectors(appConfig g.Config) (map[string]collector.Collector, error) 
 func main() {
 	// Set Gin to production mode
 	// gin.SetMode(gin.ReleaseMode)
-
+	// token := g.GetTokenStr()
+	// cc := g.GenerateToken()
+	// err := bcrypt.CompareHashAndPassword([]byte(cc), []byte(token))
+	// if err != nil {
+	// 	panic(err)
+	// }
 	fmt.Println(g.AppConfig)
 	collectors, err := loadCollectors(g.AppConfig)
 	if err != nil {
@@ -125,7 +130,6 @@ func main() {
 	})
 	//
 	// var CacheTTL *cache.Cache
-	g.AppConfig.Cache = 1
 	if g.AppConfig.Cache > 0 {
 		CacheTTL = cache.New(5*time.Minute, 10*time.Minute)
 	}

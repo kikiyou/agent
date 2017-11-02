@@ -8,8 +8,11 @@ import (
 	"log"
 	"net/http"
 	"os/exec"
+	"strconv"
 	"strings"
 	"time"
+
+	"golang.org/x/crypto/bcrypt"
 
 	"github.com/gin-gonic/gin"
 	shellwords "github.com/mattn/go-shellwords"
@@ -123,4 +126,20 @@ func ExecCommand(appConfig Config, path string, shell string, params []string, c
 		cacheTTL.Set(fingerPrint, out, time.Duration(appConfig.Cache)*time.Second)
 	}
 	return out, err
+}
+
+func GetTokenStr() string {
+	// We're using a random 16 character string as the session token
+	// This is NOT a secure way of generating session tokens
+	// DO NOT USE THIS IN PRODUCTION
+	timestamp := strconv.FormatInt(time.Now().Unix()/(24*60*60), 10)
+	TonkenStr := strings.Join([]string{AppConfig.Secret, timestamp}, "")
+	return TonkenStr
+}
+
+func GenerateToken() string {
+	TonkenStr := GetTokenStr()
+	fmt.Println(TonkenStr)
+	hashedTonken, _ := bcrypt.GenerateFromPassword([]byte(TonkenStr), bcrypt.DefaultCost)
+	return string(hashedTonken)
 }

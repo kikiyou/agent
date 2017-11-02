@@ -45,7 +45,8 @@
                             <b>
                             <input id="command" name="command" type="text" size="60" class="form-control" placeholder="请在这里输入Shell命令来运行">
                         </b>
-                            <input id="html" name="html" value="1" hidden="true">
+                            <input id="html" name="html" value="1" hidden="true"> {{if .token}}
+                            <input id="token" name="token" value="{{.token}}" hidden="true"> {{end}}
                             <!-- div class="checkbox navbar-btn">
                             <label class="navbar-link">
                                 <input type="checkbox" name="oneTimeCommandIsDynamic">

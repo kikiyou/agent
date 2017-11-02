@@ -12,6 +12,7 @@ import (
 	"github.com/gin-gonic/contrib/sessions"
 	"github.com/gin-gonic/gin"
 	"github.com/kikiyou/agent/controllers"
+	"github.com/kikiyou/agent/forms"
 	"github.com/kikiyou/agent/g"
 	_ "github.com/mattn/go-sqlite3"
 )
@@ -138,18 +139,23 @@ func initializeRoutes() {
 		// result := "rrr"
 		c.Header("Content-Type", "text/html; charset=utf-8")
 		fmt.Println(g.AppConfig.PublicDir)
-		g.Render(c, gin.H{"defaultPath": g.AppConfig.PublicDir}, "command.html")
+		g.Render(c, gin.H{"defaultPath": g.AppConfig.PublicDir, "token": g.GenerateToken()}, "command.html")
 		// c.String(http.StatusOK, result)
 	})
 
 	//设置了个2s的容错cache 两秒内同一个命令，只输出一次的结果
 	router.POST("/command", func(c *gin.Context) {
 		var (
-			shellOut string
-			path     string
-			cmd      string
+			shellOut    string
+			path        string
+			cmd         string
+			CommandForm forms.CommandForm
 		)
-
+		if c.Bind(&CommandForm) != nil {
+			c.JSON(406, gin.H{"message": "无效的提交", "form": CommandForm})
+			c.Abort()
+			return
+		}
 		if command, ok := c.GetPostForm("command"); ok {
 			if r, ok := c.GetPostForm("path"); ok {
 				path = r

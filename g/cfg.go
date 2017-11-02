@@ -28,6 +28,7 @@ type Config struct {
 	PublicDir         string // 共享目录
 	EnabledCollectors string
 	Collectors        map[string]collector.Collector
+	Secret            string
 }
 
 func getConfig() (appConfig Config, err error) {
@@ -42,6 +43,7 @@ func getConfig() (appConfig Config, err error) {
 		publicSharePath   = flag.String("public", filepath.Join(Root, "public"), "public share dir")
 		printCollectors   = flag.Bool("printCollectors", false, "If true, print available collectors and exit")
 		cache             = flag.Int("cache", 2, "设定cache默认是:2")
+		secret            = flag.String("secret", "secret", "随机token加密因子")
 	)
 	flag.Parse()
 
@@ -82,6 +84,7 @@ func getConfig() (appConfig Config, err error) {
 	appConfig.EnabledCollectors = *enabledCollectors
 	appConfig.Shell = appConfig.DefaultShell
 	appConfig.Cache = *cache
+	appConfig.Secret = *secret
 	// appConfig.DefaultShOpt = "-c"
 	// var c Config
 	// lock.Lock()
