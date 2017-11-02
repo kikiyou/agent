@@ -12,7 +12,9 @@ import (
 	"strings"
 	"time"
 
+	"github.com/gin-gonic/contrib/sessions"
 	"github.com/gin-gonic/gin"
+	"github.com/kikiyou/agent/controllers"
 	"github.com/kikiyou/agent/g"
 	shellwords "github.com/mattn/go-shellwords"
 	_ "github.com/mattn/go-sqlite3"
@@ -23,13 +25,13 @@ func execScriptsGetJSON(module string) (string, error) {
 	var out string
 	var err error
 	cmd := fmt.Sprintf("%s %s", g.TempScriptsFile, module)
-	appConfig.cache = 2
+	g.AppConfig.Cache = 2
 	path := "/tmp"
-	shell, params, err := getShellAndParams(cmd, appConfig)
+	shell, params, err := getShellAndParams(cmd, g.AppConfig)
 	if err != nil {
 		return "", err
 	}
-	out, err = execCommand(appConfig, path, shell, params, CacheTTL)
+	out, err = execCommand(g.AppConfig, path, shell, params, CacheTTL)
 	return out, err
 }
 
@@ -52,14 +54,14 @@ func ModulesRoutes(c *gin.Context) {
 }
 
 // getShellAndParams - get default shell and command
-func getShellAndParams(cmd string, appConfig Config) (shell string, params []string, err error) {
-	shell, params = appConfig.defaultShell, []string{appConfig.defaultShOpt, cmd} // sh -c "cmd"
+func getShellAndParams(cmd string, appConfig g.Config) (shell string, params []string, err error) {
+	shell, params = appConfig.DefaultShell, []string{appConfig.DefaultShOpt, cmd} // sh -c "cmd"
 
 	// custom shell
 	switch {
-	case appConfig.shell != appConfig.defaultShell && appConfig.shell != "":
-		shell = appConfig.shell
-	case appConfig.shell == "":
+	case appConfig.Shell != appConfig.DefaultShell && appConfig.Shell != "":
+		shell = appConfig.Shell
+	case appConfig.Shell == "":
 		cmdLine, err := shellwords.Parse(cmd)
 		if err != nil {
 			return shell, params, fmt.Errorf("Parse '%s' failed: %s", cmd, err)
@@ -72,21 +74,21 @@ func getShellAndParams(cmd string, appConfig Config) (shell string, params []str
 }
 
 // execCommand - execute shell command, returns bytes out and error
-func execCommand(appConfig Config, path string, shell string, params []string, cacheTTL *cache.Cache) (string, error) {
+func execCommand(appConfig g.Config, path string, shell string, params []string, cacheTTL *cache.Cache) (string, error) {
 	var (
 		out string
 		err error
 	)
 	if path == "" {
-		path = g.PublicPath
+		path = g.AppConfig.PublicDir
 	}
-	// appConfig.cache = 1
+	// AppConfig.cache = 1
 	// log.Println("###############################\n")
-	// log.Println(appConfig.cache)
+	// log.Println(AppConfig.cache)
 	fingerStr := fmt.Sprintln(path, shell, strings.Join(params[:], ","))
 	fingerPrint := g.MD5(fingerStr)
 
-	if appConfig.cache > 0 {
+	if g.AppConfig.Cache > 0 {
 		if cacheData, found := cacheTTL.Get(fingerPrint); !found {
 			// log.Printf("get from cache failed: %s", err)
 			// log.Println("no cache")
@@ -129,8 +131,8 @@ func execCommand(appConfig Config, path string, shell string, params []string, c
 			out = fmt.Sprintf("%s modele: Non-zero exit code:%s", shell, err)
 		}
 	}
-	if appConfig.cache > 0 {
-		cacheTTL.Set(fingerPrint, out, time.Duration(appConfig.cache)*time.Second)
+	if g.AppConfig.Cache > 0 {
+		cacheTTL.Set(fingerPrint, out, time.Duration(g.AppConfig.Cache)*time.Second)
 	}
 	return out, err
 }
@@ -148,33 +150,71 @@ var CommandTemplate = `
 </html>
 `
 
+//CORSMiddleware ...
+func CORSMiddleware() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		c.Writer.Header().Set("Access-Control-Allow-Origin", "http://localhost")
+		c.Writer.Header().Set("Access-Control-Max-Age", "86400")
+		c.Writer.Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE, UPDATE")
+		c.Writer.Header().Set("Access-Control-Allow-Headers", "X-Requested-With, Content-Type, Origin, Authorization, Accept, Client-Security-Token, Accept-Encoding, x-access-token")
+		c.Writer.Header().Set("Access-Control-Expose-Headers", "Content-Length")
+		c.Writer.Header().Set("Access-Control-Allow-Credentials", "true")
+
+		if c.Request.Method == "OPTIONS" {
+			fmt.Println("OPTIONS")
+			c.AbortWithStatus(200)
+		} else {
+			c.Next()
+		}
+	}
+}
+
 func initializeRoutes() {
+
+	// 防止跨站攻击
+	router.Use(CORSMiddleware())
+
+	store := sessions.NewCookieStore([]byte("secret"))
+	router.Use(sessions.Sessions("fsv_agent", store))
 
 	// Use the setUserStatus middleware for every route to set a flag
 	// indicating whether the request was from an authenticated user or not
 	router.Use(setUserStatus())
 
+	// 简单认证
+	// authorized := gin.BasicAuth(gin.Accounts{
+	// 	AppConfig.authUser: AppConfig.authPass,
+	// })
+	u := router.Group("/u")
+	{
+		user := new(controllers.UserController)
+		u.GET("/login", ensureNotLoggedIn(), user.ShowLoginPage)
+		u.POST("/login", ensureNotLoggedIn(), user.Login)
+	}
 	// Handle the index route
-	authorized := gin.BasicAuth(gin.Accounts{
-		appConfig.authUser: appConfig.authPass,
-	})
 	// router.GET("/", ensureLoggedIn(), showIndexPage)
-	router.GET("/", authorized, showIndexPage)
-	router.GET("index", authorized, showIndexPage)
-	router.GET("/dash", authorized, showDash)
-	router.GET("/server", ModulesRoutes)
+	router.GET("/", ensureLoggedIn(), func(c *gin.Context) {
+		c.HTML(http.StatusOK, "index.html", "")
+	})
+	router.GET("/index", ensureLoggedIn(), func(c *gin.Context) {
+		c.HTML(http.StatusOK, "index.html", "")
+	})
+	router.GET("/dash", ensureLoggedIn(), func(c *gin.Context) {
+		c.HTML(http.StatusOK, "dash.html", "")
+	})
+	router.GET("/server", ensureLoggedIn(), ModulesRoutes)
 
-	router.GET("/upload", authorized, func(c *gin.Context) {
-		render(c, gin.H{"title": "Create New Article"}, "upload.html")
+	router.GET("/upload", ensureLoggedIn(), func(c *gin.Context) {
+		g.Render(c, gin.H{"title": "Create New Article"}, "upload.html")
 	})
 	router.POST("/upload", func(c *gin.Context) {
 		// single file
 		form, _ := c.MultipartForm()
-		log.Println(form)
+		// log.Println(form)
 		files := form.File["files"]
 		for _, file := range files {
 			log.Println(file.Filename)
-			dst := filepath.Join(*publicSharePath, file.Filename)
+			dst := filepath.Join(g.AppConfig.PublicDir, file.Filename)
 			if err := c.SaveUploadedFile(file, dst); err != nil {
 				c.String(http.StatusBadRequest, fmt.Sprintf("upload file err: %s", err.Error()))
 				return
@@ -186,10 +226,11 @@ func initializeRoutes() {
 	//download post请求真的下载 GET 请求输入页面
 	//command get 命令 post请求 真的执行
 
-	router.GET("/cli", authorized, func(c *gin.Context) {
+	router.GET("/cli", ensureLoggedIn(), func(c *gin.Context) {
 		// result := "rrr"
 		c.Header("Content-Type", "text/html; charset=utf-8")
-		render(c, gin.H{"defaultPath": g.PublicPath}, "command.html")
+		fmt.Println(g.AppConfig.PublicDir)
+		g.Render(c, gin.H{"defaultPath": g.AppConfig.PublicDir}, "command.html")
 		// c.String(http.StatusOK, result)
 	})
 	// router.GET("/command/:commandID", func(c *gin.Context) {
@@ -238,14 +279,14 @@ func initializeRoutes() {
 
 		}
 		if cmd != "" {
-			appConfig.shell = "sh"
-			appConfig.defaultShOpt = "-c"
-			shell, params, err := getShellAndParams(cmd, appConfig)
+			g.AppConfig.Shell = "sh"
+			g.AppConfig.DefaultShOpt = "-c"
+			shell, params, err := getShellAndParams(cmd, g.AppConfig)
 			if err != nil {
 				return
 			}
-			appConfig.cache = 2
-			shellOut, err = execCommand(appConfig, path, shell, params, CacheTTL)
+			g.AppConfig.Cache = 2
+			shellOut, err = execCommand(g.AppConfig, path, shell, params, CacheTTL)
 
 			if _, ok := c.GetPostForm("html"); ok {
 				s := bytes.Replace([]byte(CommandTemplate), []byte("CONTENT"), []byte(shellOut), 1)
