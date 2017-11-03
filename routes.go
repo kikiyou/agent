@@ -86,12 +86,6 @@ func initializeRoutes() {
 	router.Use(CORSMiddleware())
 
 	store := sessions.NewCookieStore([]byte("secret"))
-	// store.Options(sessions.Options{
-	// 	MaxAge:   86400, //24H
-	// 	Secure:   true,
-	// 	HttpOnly: true,
-	// 	Path:     "/*",
-	// })
 	router.Use(sessions.Sessions("fsv_agent", store))
 
 	// Use the setUserStatus middleware for every route to set a flag

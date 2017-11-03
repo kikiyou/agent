@@ -33,12 +33,17 @@ func (ctrl UserController) Login(c *gin.Context) {
 
 	user, err := userModel.Login(LoginForm)
 	if err == nil {
+		c.Set("is_logged_in", true)
 		session := sessions.Default(c)
 		session.Set("user_id", user.ID)
 		session.Set("user_name", user.Name)
 		session.Set("user_role", user.Role)
 		session.Save()
-		c.Set("is_logged_in", true)
+		// cc := session.Get("user_name")
+		// c.SetCookie("token", "token", 3600, "", "", false, true)
+		// fmt.Println(cc)
+		// fmt.Println(user)
+		// c.Set("is_logged_in", true)
 		c.HTML(http.StatusOK, "index.html", "")
 		// c.RedirectRedirects()
 		// c.Redirect(301, "/index")

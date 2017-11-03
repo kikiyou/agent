@@ -8,7 +8,6 @@ import (
 
 	"github.com/gin-gonic/contrib/sessions"
 	"github.com/gin-gonic/gin"
-	"github.com/kikiyou/agent/g"
 )
 
 func ensureLoggedIn() gin.HandlerFunc {
@@ -19,14 +18,15 @@ func ensureLoggedIn() gin.HandlerFunc {
 		loggedIn := loggedInInterface.(bool)
 		fmt.Printf("ensureLoggedIn %s", loggedIn)
 		if !loggedIn {
-			//if token, err := c.Cookie("token"); err != nil || token == "" {
-			g.Render(c, gin.H{
-				"title": "Login",
-			}, "login.html")
+			c.Redirect(http.StatusTemporaryRedirect, "/u/login")
 			// c.AbortWithStatus(http.StatusUnauthorized)
-			// c.HTML(http.StatusOK, "index.html", "")
-			// fmt.Println("cccc")
+			// c.string(http.StatusOK, "index.html", "")
+			// fmt.Println("请先登录1")
 			c.Abort()
+			// fmt.Println("请先登录2")
+			return
+			// fmt.Println("请先登录3")
+
 		}
 	}
 }
@@ -44,6 +44,7 @@ func ensureNotLoggedIn() gin.HandlerFunc {
 			// c.HTML(http.StatusOK, "index.html", "")
 			// c.Abort()
 			c.AbortWithStatus(http.StatusUnauthorized)
+			return
 		}
 	}
 }
@@ -52,6 +53,8 @@ func ensureNotLoggedIn() gin.HandlerFunc {
 func setUserStatus() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		session := sessions.Default(c)
+		fmt.Println(session.Get("user_name"))
+		fmt.Println(session)
 		if session.Get("user_name") != nil {
 			c.Set("is_logged_in", true)
 		} else {
@@ -59,3 +62,14 @@ func setUserStatus() gin.HandlerFunc {
 		}
 	}
 }
+
+// // This middleware sets whether the user is logged in or not
+// func setUserStatus() gin.HandlerFunc {
+// 	return func(c *gin.Context) {
+// 		if token, err := c.Cookie("token"); err == nil || token != "" {
+// 			c.Set("is_logged_in", true)
+// 		} else {
+// 			c.Set("is_logged_in", false)
+// 		}
+// 	}
+// }
