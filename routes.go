@@ -3,63 +3,20 @@
 package main
 
 import (
-	"bytes"
 	"fmt"
 	"log"
 	"net/http"
 	"path/filepath"
 
-	"golang.org/x/crypto/bcrypt"
-
 	"github.com/gin-gonic/contrib/sessions"
 	"github.com/gin-gonic/gin"
 	"github.com/kikiyou/agent/controllers"
-	"github.com/kikiyou/agent/forms"
 	"github.com/kikiyou/agent/g"
+	"github.com/kikiyou/agent/models"
 	// _ "github.com/mattn/go-sqlite3"
 )
 
-func execScriptsGetJSON(module string) (string, error) {
-	var out string
-	var err error
-	shell := g.TempScriptsFile
-	params := []string{module}
-	// fmt.Println(params)
-	path := "/tmp"
-	out, err = g.ExecCommand(g.AppConfig, path, shell, params, CacheTTL)
-	return out, err
-}
-
-func ModulesRoutes(c *gin.Context) {
-	module := c.Query("module")
-	if module == "" {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "No module specified, or requested module doesn't exist."})
-		return
-	}
-	// fmt.Println(g.Collectors)
-	if fn, ok := g.Collectors[module]; ok {
-		result, _ := fn.Update()
-		c.JSON(http.StatusOK, result)
-
-	} else {
-		output, _ := execScriptsGetJSON(module)
-		c.String(http.StatusOK, output)
-	}
-
-}
-
-var CommandTemplate = `
-<!DOCTYPE html>
-<html>
-	<head>
-		<title>terminal-to-html Preview</title>
-		<link rel="stylesheet" href="static/css/terminal.css">
-	</head>
-	<body>
-		<div class="term-container">CONTENT</div>
-	</body>
-</html>
-`
+var CommandsModel = new(models.COMMANDS)
 
 //CORSMiddleware ...
 func CORSMiddleware() gin.HandlerFunc {
@@ -103,28 +60,6 @@ func initializeRoutes() {
 		u.POST("/login", user.Login)
 		u.GET("/logout", user.Logout)
 	}
-	// Handle the index route
-	// router.GET("/", ensureLoggedIn(), showIndexPage)
-	// router.GET("/", ensureLoggedIn(), func(c *gin.Context) {
-	// 	session := sessions.Default(c)
-	// 	user_name := session.Get("user_name")
-	// 	user_nameStr, _ := user_name.(string)
-	// 	var cli bool
-	// 	if user_name == "admin" {
-	// 		cli = true
-	// 	}
-	// 	g.Render(c, gin.H{"cli": cli, "user_name": user_nameStr}, "index.html")
-	// })
-	// router.GET("/index", ensureLoggedIn(), func(c *gin.Context) {
-	// 	session := sessions.Default(c)
-	// 	user_name := session.Get("user_name")
-	// 	user_nameStr, _ := user_name.(string)
-	// 	var cli bool
-	// 	if user_name == "admin" {
-	// 		cli = true
-	// 	}
-	// 	g.Render(c, gin.H{"cli": cli, "user_name": user_nameStr}, "index.html")
-	// })
 	router.GET("/", ensureLoggedIn(), func(c *gin.Context) {
 		session := sessions.Default(c)
 		user_name := session.Get("user_name")
@@ -135,7 +70,9 @@ func initializeRoutes() {
 		}
 		g.Render(c, gin.H{"cli": cli, "user_name": user_nameStr}, "dash.html")
 	})
-	router.GET("/server", ensureLoggedIn(), ModulesRoutes)
+	command := new(controllers.CommandController)
+
+	router.GET("/server", ensureLoggedIn(), command.ModulesRoutes)
 
 	router.GET("/upload", ensureLoggedIn(), func(c *gin.Context) {
 		session := sessions.Default(c)
@@ -168,84 +105,15 @@ func initializeRoutes() {
 
 	router.GET("/cli", ensureLoggedIn(), func(c *gin.Context) {
 		// result := "rrr"
-		c.Header("Content-Type", "text/html; charset=utf-8")
-		fmt.Println(g.AppConfig.PublicDir)
-		g.Render(c, gin.H{"defaultPath": g.AppConfig.PublicDir, "token": g.GenerateToken()}, "command.html")
+		// c.Header("Content-Type", "text/html; charset=utf-8")
+		// fmt.Println(g.AppConfig.PublicDir)
+		CommandList, _ := CommandsModel.GetCommandList()
+
+		g.Render(c, gin.H{"defaultPath": g.AppConfig.PublicDir, "token": g.GenerateToken(), "CommandList": CommandList}, "command.html")
 		// c.String(http.StatusOK, result)
 	})
 
 	//设置了个2s的容错cache 两秒内同一个命令，只输出一次的结果
-	router.POST("/command", func(c *gin.Context) {
-		var (
-			shellOut    string
-			path        string
-			cmd         string
-			CommandForm forms.CommandForm
-		)
-		if c.Bind(&CommandForm) != nil {
-			c.JSON(406, gin.H{"message": "无效的提交", "form": CommandForm})
-			c.Abort()
-			return
-		}
-
-		if hashedToken, ok := c.GetPostForm("token"); ok {
-			tokenStr := g.GetTokenStr()
-			err := bcrypt.CompareHashAndPassword([]byte(hashedToken), []byte(tokenStr))
-			if err != nil {
-				c.JSON(406, gin.H{"message": "无效的token"})
-				c.Abort()
-				return
-			}
-
-			if command, ok := c.GetPostForm("command"); ok {
-				if r, ok := c.GetPostForm("path"); ok {
-					path = r
-				}
-				cmd = command
-			}
-			if commandID, ok := c.GetPostForm("commandID"); ok {
-				fmt.Println(commandID)
-				//查询数据
-				// db, err := sql.Open("sqlite3", "db/command_set.sqlite3")
-				// g.CheckErr(err)
-
-				// rows, err := db.Query("SELECT * FROM COMMANDS")
-				// g.CheckErr(err)
-
-				// for rows.Next() {
-				// 	var ID int
-				// 	var COMMAND string
-				// 	var LABEL string
-				// 	var ISDYNAMIC int
-				// 	err = rows.Scan(&ID, &COMMAND, &LABEL, &ISDYNAMIC)
-				// 	g.CheckErr(err)
-				// 	fmt.Println(ID)
-				// 	fmt.Println(COMMAND)
-				// 	fmt.Println(LABEL)
-				// 	fmt.Println(ISDYNAMIC)
-				// }
-				cmd = "ls -l /"
-
-			}
-			if cmd != "" {
-				// g.AppConfig.Shell = "sh"
-				// g.AppConfig.DefaultShOpt = "-c"
-				shell, params, err := g.GetShellAndParams(cmd, g.AppConfig)
-				if err != nil {
-					return
-				}
-				// g.AppConfig.Cache = 2
-				shellOut, err = g.ExecCommand(g.AppConfig, path, shell, params, CacheTTL)
-
-				if _, ok := c.GetPostForm("html"); ok {
-					s := bytes.Replace([]byte(CommandTemplate), []byte("CONTENT"), []byte(shellOut), 1)
-					shellOut = string(s)
-					c.String(http.StatusOK, shellOut)
-				} else {
-					c.String(http.StatusOK, shellOut)
-				}
-			}
-		}
-	})
+	router.POST("/command", command.Command)
 
 }

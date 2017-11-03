@@ -8,21 +8,18 @@ import (
 	"net/http"
 	"os"
 	"strings"
-	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/kikiyou/agent/collector"
+	"github.com/kikiyou/agent/db"
 	"github.com/kikiyou/agent/g"
 	"github.com/kikiyou/agent/shell"
 	"github.com/kikiyou/agent/templates"
-	cache "github.com/patrickmn/go-cache"
 )
 
 var router *gin.Engine
 
 // var authorized gin.HandlerFunc
-
-var CacheTTL *cache.Cache
 
 func loadCollectors(appConfig g.Config) (map[string]collector.Collector, error) {
 	collectors := map[string]collector.Collector{}
@@ -50,6 +47,7 @@ func main() {
 	// if err != nil {
 	// 	panic(err)
 	// }
+	db.Init()
 	fmt.Println(g.AppConfig)
 	collectors, err := loadCollectors(g.AppConfig)
 	if err != nil {
@@ -129,10 +127,7 @@ func main() {
 		})
 	})
 	//
-	// var CacheTTL *cache.Cache
-	if g.AppConfig.Cache > 0 {
-		CacheTTL = cache.New(5*time.Minute, 10*time.Minute)
-	}
+
 	// Initialize the routes
 	initializeRoutes()
 

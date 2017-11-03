@@ -8,9 +8,15 @@ import (
 	"path/filepath"
 	"runtime"
 	"strings"
+	"time"
 
 	"github.com/kikiyou/agent/collector"
+	cacheGo "github.com/patrickmn/go-cache"
 )
+
+// var (
+// 	CacheTTL *cacheGo.Cache
+// )
 
 // Config - config struct
 type Config struct {
@@ -29,6 +35,7 @@ type Config struct {
 	EnabledCollectors string
 	Collectors        map[string]collector.Collector
 	Secret            string
+	CacheTTL          *cacheGo.Cache
 }
 
 func getConfig() (appConfig Config, err error) {
@@ -85,6 +92,12 @@ func getConfig() (appConfig Config, err error) {
 	appConfig.Shell = appConfig.DefaultShell
 	appConfig.Cache = *cache
 	appConfig.Secret = *secret
+
+	var CacheTTL *cacheGo.Cache
+	if appConfig.Cache > 0 {
+		CacheTTL = cacheGo.New(5*time.Minute, 10*time.Minute)
+	}
+	appConfig.CacheTTL = CacheTTL
 	// appConfig.DefaultShOpt = "-c"
 	// var c Config
 	// lock.Lock()

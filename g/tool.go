@@ -6,8 +6,10 @@ import (
 	"encoding/hex"
 	"fmt"
 	"log"
+	"math/big"
 	"net/http"
 	"os/exec"
+	"reflect"
 	"strconv"
 	"strings"
 	"time"
@@ -142,4 +144,26 @@ func GenerateToken() string {
 	fmt.Println(TonkenStr)
 	hashedTonken, _ := bcrypt.GenerateFromPassword([]byte(TonkenStr), bcrypt.DefaultCost)
 	return string(hashedTonken)
+}
+
+//ConvertToInt64 ...
+func ConvertToInt64(number interface{}) int64 {
+	if reflect.TypeOf(number).String() == "int" {
+		return int64(number.(int))
+	}
+	return number.(int64)
+}
+
+// Int64 string to int64
+func StrToInt64(f string) (int64, error) {
+	v, err := strconv.ParseInt(f, 10, 64)
+	if err != nil {
+		i := new(big.Int)
+		ni, ok := i.SetString(f, 10) // octal
+		if !ok {
+			return v, err
+		}
+		return ni.Int64(), nil
+	}
+	return v, err
 }

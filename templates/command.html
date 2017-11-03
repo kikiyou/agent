@@ -26,9 +26,11 @@
                         <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">常用命令集 <span class="caret"></span></a>
                         <ul id="listCommandSet" class="dropdown-menu">
                             <!-- ?php require_once('listCommandSet.php'); ?-->
+                            {{ if .CommandList }} {{ range .CommandList }}
                             <li>
-                                <a data-command-id="4">列出缓存</a>
+                                <a data-command-id="{{ .ID }}">{{ .LABEL }}</a>
                             </li>
+                            {{end}} {{end}}
                         </ul>
                     </li>
                 </ul>
@@ -210,9 +212,7 @@
 
                 $.ajax({
                     url: "command",
-                    {{if .token}}
                     data: "commandID=" + commandID + "&html=1" + "&token={{.token}}",
-                    {{end}}
                     type: "POST",
                     success: function(data) {
                         // If the command is successful, update the terminal div
