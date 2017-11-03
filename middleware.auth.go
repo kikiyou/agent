@@ -43,7 +43,11 @@ func ensureNotLoggedIn() gin.HandlerFunc {
 		if loggedIn {
 			// c.HTML(http.StatusOK, "index.html", "")
 			// c.Abort()
-			c.AbortWithStatus(http.StatusUnauthorized)
+			c.Set("is_logged_in", false)
+			session := sessions.Default(c)
+			session.Clear()
+			session.Save()
+			// c.AbortWithStatus(http.StatusUnauthorized)
 			return
 		}
 	}

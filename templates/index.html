@@ -12,11 +12,14 @@
                     <li class="nav-header">
                         <div class="dropdown profile-element">
                             <a data-toggle="dropdown" class="dropdown-toggle" href="#">
-                                <span class="clear"> <span class="block m-t-xs"> <strong class="font-bold">Admin</strong>
+                                <span class="clear"> <span class="block m-t-xs"> 
+                                        {{if .user_name}}
+                                    <strong class="font-bold">{{.user_name}}</strong>
+                                    {{end}}
                                      </span> <span class="text-muted text-xs block">管理 <b class="caret"></b></span> </span>
                             </a>
                             <ul class="dropdown-menu animated fadeInRight m-t-xs">
-                                <li><a href="#">Logout</a></li>
+                                <li><a href="/u/logout">Logout</a></li>
                             </ul>
                         </div>
                         <div class="logo-element">
@@ -35,9 +38,12 @@
                     <li>
                         <a href="/public"><i class="fa fa-download"></i> <span class="nav-label">下载文件</span><span class="fa arrow"></span></a>
                     </li>
+                    {{if .cli}}
                     <li>
                         <a href="/cli"><i class="fa fa-laptop"></i> <span class="nav-label">网页终端</span><span class="fa arrow"></span></a>
                     </li>
+                    {{end}}
+
                 </ul>
 
             </div>
@@ -52,7 +58,7 @@
                     </div>
                     <ul class="nav navbar-top-links navbar-right">
                         <li>
-                            <a href="#">
+                            <a href="/u/logout">
                                 <i class="fa fa-sign-out"></i> Log out
                             </a>
                         </li>
@@ -66,17 +72,24 @@
                         <div class="text-center m-t-lg">
                             <h1>烽视威Agent</h1>
                             <ul>
-                                <li><a href="/dash">❯ /dash</a> <span style="color: #888">- 实时监控<span></li>
-                                    <li><a href="/upload">/upload</a> <span style="color: #888">- 多文件上传<span></li>
-                                    <li><a href="/public">/public</a> <span style="color: #888">- 文件下载<span></li>
-                                    <li><a href="/cli">/cli</a> <span style="color: #888">- 网页终端<span></li> 
-                                </ul>
+                                <li style="padding-right: 50px"> <a href="/dash"><strong>❯- 实时监控</strong></a>
+                                </li>
+                                <li style="padding-right: 50px">
+                                    <a href="/upload "><strong>❯- 文件上传</strong></a>
+                                </li>
+                                <li style="padding-right: 50px"> <a href="/public "><strong>❯- 文件下载</strong></a>
+                                </li>
+                                {{if .cli}}
+                                <li style="padding-right: 50px"> <a href="/cli "><strong>❯- 网页终端</strong></a>
+                                </li>
+                                {{end}}
+                            </ul>
                         </div>
                     </div>
                 </div>
             </div>
-            <div class="footer">
-                <!-- div class="pull-right">
+            <div class="footer ">
+                <!-- div class="pull-right ">
                     10GB of <strong>250GB</strong> Free.
                 </div -->
                 <div>
@@ -88,14 +101,14 @@
     </div>
 
     <!-- Mainly scripts -->
-    <script src="/static/admin/js/jquery-3.1.1.min.js"></script>
-    <script src="/static/admin/js/bootstrap.min.js"></script>
-    <script src="/static/admin/js/plugins/metisMenu/jquery.metisMenu.js"></script>
-    <script src="/static/admin/js/plugins/slimscroll/jquery.slimscroll.min.js"></script>
+    <script src="/static/admin/js/jquery-3.1.1.min.js "></script>
+    <script src="/static/admin/js/bootstrap.min.js "></script>
+    <script src="/static/admin/js/plugins/metisMenu/jquery.metisMenu.js "></script>
+    <script src="/static/admin/js/plugins/slimscroll/jquery.slimscroll.min.js "></script>
 
     <!-- Custom and plugin javascript -->
-    <script src="/static/admin/js/inspinia.js"></script>
-    <script src="/static/admin/js/plugins/pace/pace.min.js"></script>
+    <script src="/static/admin/js/inspinia.js "></script>
+    <script src="/static/admin/js/plugins/pace/pace.min.js "></script>
 
 
 </body>

@@ -99,19 +99,41 @@ func initializeRoutes() {
 	u := router.Group("/u")
 	{
 		user := new(controllers.UserController)
-		u.GET("/login", user.ShowLoginPage)
+		u.GET("/login", ensureNotLoggedIn(), user.ShowLoginPage)
 		u.POST("/login", user.Login)
+		u.GET("/logout", user.Logout)
 	}
 	// Handle the index route
 	// router.GET("/", ensureLoggedIn(), showIndexPage)
+	// router.GET("/", ensureLoggedIn(), func(c *gin.Context) {
+	// 	session := sessions.Default(c)
+	// 	user_name := session.Get("user_name")
+	// 	user_nameStr, _ := user_name.(string)
+	// 	var cli bool
+	// 	if user_name == "admin" {
+	// 		cli = true
+	// 	}
+	// 	g.Render(c, gin.H{"cli": cli, "user_name": user_nameStr}, "index.html")
+	// })
+	// router.GET("/index", ensureLoggedIn(), func(c *gin.Context) {
+	// 	session := sessions.Default(c)
+	// 	user_name := session.Get("user_name")
+	// 	user_nameStr, _ := user_name.(string)
+	// 	var cli bool
+	// 	if user_name == "admin" {
+	// 		cli = true
+	// 	}
+	// 	g.Render(c, gin.H{"cli": cli, "user_name": user_nameStr}, "index.html")
+	// })
 	router.GET("/", ensureLoggedIn(), func(c *gin.Context) {
-		c.HTML(http.StatusOK, "index.html", "")
-	})
-	router.GET("/index", ensureLoggedIn(), func(c *gin.Context) {
-		c.HTML(http.StatusOK, "index.html", "")
-	})
-	router.GET("/dash", ensureLoggedIn(), func(c *gin.Context) {
-		c.HTML(http.StatusOK, "dash.html", "")
+		session := sessions.Default(c)
+		user_name := session.Get("user_name")
+		user_nameStr, _ := user_name.(string)
+		var cli bool
+		if user_name == "admin" {
+			cli = true
+		}
+		g.Render(c, gin.H{"cli": cli, "user_name": user_nameStr}, "dash.html")
 	})
 	router.GET("/server", ensureLoggedIn(), ModulesRoutes)
 

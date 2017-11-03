@@ -1,8 +1,6 @@
 package controllers
 
 import (
-	"net/http"
-
 	"github.com/gin-gonic/contrib/sessions"
 	"github.com/gin-gonic/gin"
 	"github.com/kikiyou/agent/forms"
@@ -44,9 +42,9 @@ func (ctrl UserController) Login(c *gin.Context) {
 		// fmt.Println(cc)
 		// fmt.Println(user)
 		// c.Set("is_logged_in", true)
-		c.HTML(http.StatusOK, "index.html", "")
+		// c.HTML(http.StatusOK, "index.html", "")
 		// c.RedirectRedirects()
-		// c.Redirect(301, "/index")
+		c.Redirect(301, "/")
 		// c.JSON(200, gin.H{"message": "User signed in", "user": user})
 	} else {
 		c.JSON(406, gin.H{"message": "登录失败", "error": err.Error()})
@@ -54,4 +52,14 @@ func (ctrl UserController) Login(c *gin.Context) {
 		return
 	}
 
+}
+
+//Signout ...
+func (ctrl UserController) Logout(c *gin.Context) {
+	session := sessions.Default(c)
+	session.Clear()
+	session.Save()
+	c.Set("is_logged_in", false)
+	// c.JSON(200, gin.H{"message": "Signed out..."})
+	c.Redirect(301, "/u/login")
 }
