@@ -210,7 +210,9 @@
 
                 $.ajax({
                     url: "command",
-                    data: "commandID=" + commandID + "&html=1",
+                    {{if .token}}
+                    data: "commandID=" + commandID + "&html=1" + "&token={{.token}}",
+                    {{end}}
                     type: "POST",
                     success: function(data) {
                         // If the command is successful, update the terminal div
