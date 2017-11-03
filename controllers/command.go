@@ -57,8 +57,8 @@ func (ctrl CommandController) Command(c *gin.Context) {
 			if err != nil {
 				return
 			}
-			// CommandList, _ := CommandsModel.GetCommandList()
-
+			// cc := CommandsModel.AddCommand("ss", "monkey22")
+			// cc := CommandsModel.DeleteCommand(intCommandID)
 			// fmt.Println(cc)
 			cmd = comand.COMMAND
 

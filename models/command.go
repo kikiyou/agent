@@ -1,6 +1,8 @@
 package models
 
 import (
+	"errors"
+
 	"github.com/kikiyou/agent/db"
 )
 
@@ -24,4 +26,24 @@ func (m COMMANDS) GetCommandAndIsDynamicByID(ID int64) (c COMMANDS, err error) {
 func (m COMMANDS) GetCommandList() (c []COMMANDS, err error) {
 	_, err = db.GetDB().Select(&c, "SELECT * from COMMANDS")
 	return c, err
+}
+
+func (m COMMANDS) AddCommand(COMMAND string, LABEL string) (err error) {
+	_, err = db.GetDB().Exec("INSERT INTO COMMANDS(COMMAND, LABEL, ISDYNAMIC) VALUES($1, $2, 0)", COMMAND, LABEL)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (m COMMANDS) DeleteCommand(ID int64) (err error) {
+	_, err = m.GetCommandAndIsDynamicByID(ID)
+
+	if err != nil {
+		return errors.New("ID not found")
+	}
+
+	_, err = db.GetDB().Exec("DELETE FROM COMMANDS WHERE id=$1", ID)
+
+	return err
 }
