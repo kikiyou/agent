@@ -4,6 +4,14 @@
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <title>服务器监控实时展示</title>
+
+
+    <link href="/static/admin/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/static/admin/font-awesome/css/font-awesome.min.css" rel="stylesheet">
+    <link href="/static/admin/css/style.css" rel="stylesheet">
+
+
+
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Monitor your Linux server through a simple web dashboard. Open source and free!">
     <meta name="apple-mobile-web-app-capable" content="yes">
@@ -21,18 +29,76 @@
     <!--[if lt IE 9]>
           <script src="https://html5shim.googlecode.com/svn/trunk/html5.js"></script>
         <![endif]-->
-</head>
+</head -->
 
 <body>
 
-    <div class="hero">
-        <h4 class="title">运维之眼</h4>
-        <theme-switcher></theme-switcher>
-        <nav-bar></nav-bar>
-    </div>
+    <div id="wrapper">
 
-    <!-- Templates Get Rendered Here -->
-    <div id="plugins" class="animated fadeInDown" ng-view>
+        <nav class="navbar-default navbar-static-side" role="navigation">
+            <div class="sidebar-collapse">
+                <ul class="nav metismenu" id="side-menu">
+                    <li class="nav-header">
+                        <div class="dropdown profile-element">
+                            <a data-toggle="dropdown" class="dropdown-toggle" href="#">
+                                <span class="clear"> <span class="block m-t-xs"> <strong class="font-bold">Admin</strong>
+                                             </span> <span class="text-muted text-xs block">管理 <b class="caret"></b></span> </span>
+                            </a>
+                            <ul class="dropdown-menu animated fadeInRight m-t-xs">
+                                <li><a href="#">Logout</a></li>
+                            </ul>
+                        </div>
+                        <div class="logo-element">
+                            烽
+                        </div>
+                    </li>
+                    <li>
+                        <a href="/index"><i class="fa fa-th-large"></i> <span class="nav-label">首页</span></a>
+                    </li>
+                    <li class="active">
+                        <a href="/dash"><i class="fa fa-bar-chart-o"></i> <span class="nav-label">运维之眼</span><span class="fa arrow"></span></a>
+                    </li>
+                </ul>
+
+            </div>
+        </nav>
+
+        <div id="page-wrapper" class="gray-bg">
+            <div class="row border-bottom">
+                <nav class="navbar navbar-static-top white-bg" role="navigation" style="margin-bottom: 0">
+                    <div class="navbar-header">
+                        <a class="navbar-minimalize minimalize-styl-2 btn btn-primary " href="#">
+                            <i class="fa fa-bars"></i> </a>
+                    </div>
+                    <ul class="nav navbar-top-links navbar-right">
+                        <li>
+                            <a href="#">
+                                <i class="fa fa-sign-out"></i> Log out
+                            </a>
+                        </li>
+                    </ul>
+
+                </nav>
+            </div>
+
+            <div class="hero wrapper wrapper-content animated fadeInRight">
+                <div class="row">
+                    <div class="col-lg-12">
+                        <div class="text-center m-t-lg">
+                            <!-- h4 class="title">运维之眼</h4 -->
+                            <!-- theme-switcher></theme-switcher -->
+                            <nav-bar></nav-bar>
+
+
+                            <!-- Templates Get Rendered Here -->
+                            <div id="plugins" class="animated fadeInDown" ng-view>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
     </div>
 
     <!-- Javascript-->
@@ -40,6 +106,18 @@
     <script src="static/js/linuxDash.js" type="text/javascript"></script>
     <script src="static/js/modules.js" type="text/javascript"></script>
     <script src="static/js/smoothie.min.js" type="text/javascript"></script>
+
+    <!-- Mainly scripts -->
+    <script src="/static/admin/js/jquery-3.1.1.min.js"></script>
+    <script src="/static/admin/js/bootstrap.min.js"></script>
+    <script src="/static/admin/js/plugins/metisMenu/jquery.metisMenu.js"></script>
+    <script src="/static/admin/js/plugins/slimscroll/jquery.slimscroll.min.js"></script>
+
+    <!-- Custom and plugin javascript -->
+    <script src="/static/admin/js/inspinia.js"></script>
+    <script src="/static/admin/js/plugins/pace/pace.min.js"></script>
+
+
 </body>
 
 </html>
