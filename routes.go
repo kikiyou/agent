@@ -138,7 +138,14 @@ func initializeRoutes() {
 	router.GET("/server", ensureLoggedIn(), ModulesRoutes)
 
 	router.GET("/upload", ensureLoggedIn(), func(c *gin.Context) {
-		g.Render(c, gin.H{"title": "Create New Article"}, "upload.html")
+		session := sessions.Default(c)
+		user_name := session.Get("user_name")
+		user_nameStr, _ := user_name.(string)
+		var cli bool
+		if user_name == "admin" {
+			cli = true
+		}
+		g.Render(c, gin.H{"cli": cli, "user_name": user_nameStr}, "upload.html")
 	})
 	router.POST("/upload", func(c *gin.Context) {
 		// single file

@@ -3,7 +3,6 @@
 package main
 
 import (
-	"fmt"
 	"net/http"
 
 	"github.com/gin-gonic/contrib/sessions"
@@ -16,7 +15,7 @@ func ensureLoggedIn() gin.HandlerFunc {
 		// the user is not logged in
 		loggedInInterface, _ := c.Get("is_logged_in")
 		loggedIn := loggedInInterface.(bool)
-		fmt.Printf("ensureLoggedIn %s", loggedIn)
+		// fmt.Printf("ensureLoggedIn %s", loggedIn)
 		if !loggedIn {
 			c.Redirect(http.StatusTemporaryRedirect, "/u/login")
 			// c.AbortWithStatus(http.StatusUnauthorized)
@@ -39,7 +38,7 @@ func ensureNotLoggedIn() gin.HandlerFunc {
 		// the user is already logged in
 		loggedInInterface, _ := c.Get("is_logged_in")
 		loggedIn := loggedInInterface.(bool)
-		fmt.Printf("ensureNotLoggedIn %s", loggedIn)
+		// fmt.Printf("ensureNotLoggedIn %s", loggedIn)
 		if loggedIn {
 			// c.HTML(http.StatusOK, "index.html", "")
 			// c.Abort()
@@ -57,8 +56,8 @@ func ensureNotLoggedIn() gin.HandlerFunc {
 func setUserStatus() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		session := sessions.Default(c)
-		fmt.Println(session.Get("user_name"))
-		fmt.Println(session)
+		// fmt.Println(session.Get("user_name"))
+		// fmt.Println(session)
 		if session.Get("user_name") != nil {
 			c.Set("is_logged_in", true)
 		} else {
