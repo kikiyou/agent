@@ -1,26 +1,34 @@
 {{ template "header.html" .}}
-<h1>Login</h1>
 
-<div class="panel panel-default col-sm-6">
-    <div class="panel-body">
-        {{ if .ErrorTitle }}
-        <p class="bg-danger">
-            {{ .ErrorTitle }}: {{ .ErrorMessage }}
-        </p>
-        {{ end }}
+<body class="gray-bg">
 
-        <form action="/u/login" class="form" method="post">
-            <div class="form-group">
-                <label for="name">用户名</label>
-                <input type="text" class="form-control" id="name" name="name" placeholder="输入用户名">
+    <div class="middle-box text-center loginscreen animated fadeInDown">
+        <div>
+            <div>
+
+                <h1 class="logo-name">烽</h1>
+
             </div>
-            <div class="form-group">
-                <label for="password">密码</label>
-                <input type="password" class="form-control" id="password" name="password" placeholder="输入密码">
-            </div>
-            <button type="submit" class="btn brn-primary">登录</button>
-        </form>
+            <h3>欢迎使用 烽视威Agent</h3>
+            <p>使命在肩 无畏向前</p>
+            <p>请输入下面的信息登陆.</p>
+            <form method="POST" action="/u/login" class="m-t" role="form">
+                <div class="form-group">
+                    <input id="name" name="name" type="text" class="form-control" placeholder="用户名" required="">
+                </div>
+                <div class="form-group">
+                    <input id="password" name="password" type="password" class="form-control" placeholder="密码" required="">
+                </div>
+                <button type="submit" class="btn btn-primary block full-width m-b">登录</button>
+            </form>
+            <p class="m-t"> <small>烽火 Agent &copy; 2017</small> </p>
+        </div>
     </div>
-</div>
 
-{{ template "footer.html" .}}
+    <!-- Mainly scripts -->
+    <script src="/static/admin/js/jquery-3.1.1.min.js"></script>
+    <script src="/static/admin/js/bootstrap.min.js"></script>
+
+</body>
+
+</html>

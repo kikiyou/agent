@@ -1,19 +1,16 @@
-<!--header.html-->
-
-<!doctype html>
-<html lang="cn">
+<html>
 
 <head>
-    <!--Use the `title` variable to set the title of the page-->
-    <title>{{ .title }}</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta charset="UTF-8">
 
-    <!--Use bootstrap to make the application look decent-->
-    <link rel="stylesheet" href="/static/css/bootstrap.min.css">
-    <script async src="/static/js/upload/bootstrap.min.js"></script>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>烽视威 | 登录</title>
+
+    <link href="/static/admin/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/static/admin/font-awesome/css/font-awesome.min.css" rel="stylesheet">
+
+    <link href="/static/admin/css/animate.css" rel="stylesheet">
+    <link href="/static/admin/css/style.css" rel="stylesheet">
+
 </head>
-
-<body class="container">
-    <!--Embed the menu.html template at this location-->
-    {{ template "menu.html" . }}
