@@ -16,12 +16,11 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/kikiyou/agent/controllers"
 	"github.com/kikiyou/agent/g"
-	"github.com/kikiyou/agent/models"
 	"github.com/kr/pty"
 	// _ "github.com/mattn/go-sqlite3"
 )
 
-var CommandsModel = new(models.COMMANDS)
+// var CommandsModel = new(models.COMMANDS)
 
 //CORSMiddleware ...
 func CORSMiddleware() gin.HandlerFunc {
@@ -63,7 +62,7 @@ func onShell(w http.ResponseWriter, r *http.Request) {
 		// starts new command in a newly allocated terminal:
 		// TODO: replace /bin/bash with:
 		//		 kubectl exec -ti <pod> --container <container name> -- /bin/bash
-		cmd := exec.Command("/usr/bin/bash")
+		cmd := exec.Command("/bin/bash")
 		tty, err := pty.Start(cmd)
 		fmt.Println(tty)
 		if err != nil {
@@ -157,15 +156,15 @@ func initializeRoutes() {
 	//download post请求真的下载 GET 请求输入页面
 	//command get 命令 post请求 真的执行
 
-	router.GET("/cli", ensureLoggedIn(), func(c *gin.Context) {
-		// result := "rrr"
-		// c.Header("Content-Type", "text/html; charset=utf-8")
-		// fmt.Println(g.AppConfig.PublicDir)
-		CommandList, _ := CommandsModel.GetCommandList()
+	// router.GET("/cli", ensureLoggedIn(), func(c *gin.Context) {
+	// 	// result := "rrr"
+	// 	// c.Header("Content-Type", "text/html; charset=utf-8")
+	// 	// fmt.Println(g.AppConfig.PublicDir)
+	// 	// CommandList, _ := CommandsModel.GetCommandList()
 
-		g.Render(c, gin.H{"defaultPath": g.AppConfig.PublicDir, "token": g.GenerateToken(), "CommandList": CommandList}, "command.html")
-		// c.String(http.StatusOK, result)
-	})
+	// 	g.Render(c, gin.H{"defaultPath": g.AppConfig.PublicDir, "token": g.GenerateToken(), "CommandList": CommandList}, "command.html")
+	// 	// c.String(http.StatusOK, result)
+	// })
 
 	//设置了个2s的容错cache 两秒内同一个命令，只输出一次的结果
 	router.POST("/command", command.Command)

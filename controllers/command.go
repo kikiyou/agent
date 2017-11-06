@@ -8,14 +8,13 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/kikiyou/agent/forms"
 	"github.com/kikiyou/agent/g"
-	"github.com/kikiyou/agent/models"
 	"golang.org/x/crypto/bcrypt"
 )
 
 type CommandController struct{}
 
 // var CacheTTL g.CacheTTL
-var CommandsModel = new(models.COMMANDS)
+// var CommandsModel = new(models.COMMANDS)
 
 func (ctrl CommandController) Command(c *gin.Context) {
 	var (
@@ -47,20 +46,20 @@ func (ctrl CommandController) Command(c *gin.Context) {
 		}
 		if commandID, ok := c.GetPostForm("commandID"); ok {
 			fmt.Println(commandID)
-			//查询数据
-			intCommandID, _ := g.StrToInt64(commandID)
-			if err != nil {
-				return
-			}
-			comand, err := CommandsModel.GetCommandAndIsDynamicByID(intCommandID)
-			// db, err := sql.Open("sqlite3", "db/command_set.sqlite3")
-			if err != nil {
-				return
-			}
-			// cc := CommandsModel.AddCommand("ss", "monkey22")
-			// cc := CommandsModel.DeleteCommand(intCommandID)
-			// fmt.Println(cc)
-			cmd = comand.COMMAND
+			// //查询数据
+			// intCommandID, _ := g.StrToInt64(commandID)
+			// if err != nil {
+			// 	return
+			// }
+			// comand, err := CommandsModel.GetCommandAndIsDynamicByID(intCommandID)
+			// // db, err := sql.Open("sqlite3", "db/command_set.sqlite3")
+			// if err != nil {
+			// 	return
+			// }
+			// // cc := CommandsModel.AddCommand("ss", "monkey22")
+			// // cc := CommandsModel.DeleteCommand(intCommandID)
+			// // fmt.Println(cc)
+			// cmd = comand.COMMAND
 
 		}
 		if cmd != "" {

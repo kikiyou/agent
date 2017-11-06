@@ -11,7 +11,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/kikiyou/agent/collector"
-	"github.com/kikiyou/agent/db"
+	// "github.com/kikiyou/agent/db"
 	"github.com/kikiyou/agent/g"
 	"github.com/kikiyou/agent/shell"
 	"github.com/kikiyou/agent/templates"
@@ -47,7 +47,7 @@ func main() {
 	// if err != nil {
 	// 	panic(err)
 	// }
-	db.Init()
+	// db.Init()
 	fmt.Println(g.AppConfig)
 	collectors, err := loadCollectors(g.AppConfig)
 	if err != nil {
