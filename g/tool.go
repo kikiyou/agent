@@ -141,7 +141,7 @@ func GetTokenStr() string {
 
 func GenerateToken() string {
 	TonkenStr := GetTokenStr()
-	fmt.Println(TonkenStr)
+	// fmt.Println(TonkenStr)
 	hashedTonken, _ := bcrypt.GenerateFromPassword([]byte(TonkenStr), bcrypt.DefaultCost)
 	return string(hashedTonken)
 }

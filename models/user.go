@@ -4,6 +4,7 @@ import (
 	"errors"
 
 	"github.com/kikiyou/agent/forms"
+	"github.com/kikiyou/agent/g"
 )
 
 //user ...
@@ -19,7 +20,7 @@ type UserModel struct{}
 
 // 写死user
 var userList = []user{
-	user{ID: "0", Name: "admin", Password: "admin", Role: "0"},
+	user{ID: "0", Name: g.AppConfig.AuthUser, Password: g.AppConfig.AuthPass, Role: "0"},
 	user{ID: "1", Name: "tom", Password: "cat", Role: "1"},
 }
 

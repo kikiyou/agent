@@ -1,0 +1,105 @@
+2017/11/06 22:01:25 cfg.go:72: Starting version 0.0.5
+2017/11/06 22:01:25 main.go:50: Enabled collectors:
+2017/11/06 22:01:25 main.go:52:  - current_ram
+2017/11/06 22:01:25 main.go:52:  - load_avg
+[GIN] 2017/11/06 - 22:01:55 | 200 [0m|     461.713µs |       127.0.0.1 |  GET [0m    /webshell
+&{0xc42029c6e0}
+[1m[7m%[27m[1m[0m                                                                                
+]7;file://monkey.fonsview.com/home/monkey/go/src/github.com/kikiyou/agent
+]2;monkey@monkey: ~/go/src/github.com/kikiyou/agent
+]1;..kikiyou/agent
+[0m[27m[24m[Jmonkey [01;32m➜  [36magent[00m [01;34mgit:([31mfsv[34m) [33m✗[00m 
+[K
+[?1h=
+[?2004h
+l
+ls
+[?1l>[?2004l
+
+]2;ls --color=tty
+]1;ls
+[0m[38;5;40magent[0m               [38;5;33mcron[0m             middleware.auth.go  routes.go
+
+
+bindata_assetfs.go  [38;5;33mdb[0m               [38;5;33mmodels[0m              [38;5;33mshell[0m
+
+[38;5;40mbuild.sh[0m            [38;5;33mforms[0m            nohup.out           [38;5;33mstatic[0m
+cfg.json            [38;5;33mg[0m                NOTICE              [38;5;33mtemplates[0m
+[38;5;33mcollector[0m           inputwrapper.go  ping_hosts          websocketwriter.go
+
+[38;5;40mcontrol[0m             LICENSE          [38;5;33mpublic[0m              请求与响应地址.md
+[38;5;33mcontrollers[0m         main.go          README.md
+
+[1m[7m%[27m[1m[0m                                                                                
+]7;file://monkey.fonsview.com/home/monkey/go/src/github.com/kikiyou/agent]2;monkey@monkey: ~/go/src/github.com/kikiyou/agent]1;..kikiyou/agent
+[0m[27m[24m[Jmonkey [01;32m➜  [36magent[00m [01;34mgit:([31mfsv[34m) [33m✗[00m 
+[K
+[?1h=
+[?2004h
+c
+cd
+ 
+/
+[?1l>
+[?2004l
+
+]2;cd /]1;cd
+[1m[7m%[27m[1m[0m                                                                                
+]7;file://monkey.fonsview.com/
+]2;monkey@monkey: /
+]1;/
+[0m[27m[24m[Jmonkey [01;32m➜  [36m/[00m [K
+[?1h=
+[?2004h
+[GIN] 2017/11/06 - 22:02:04 | 200 [0m|    1.028009ms |       127.0.0.1 |  GET [0m    /
+[GIN] 2017/11/06 - 22:02:04 | 404 [0m|     392.835µs |       127.0.0.1 |  GET [0m    /websocket
+[GIN] 2017/11/06 - 22:02:05 | 200 [0m|     602.496µs |       127.0.0.1 |  GET [0m    /server?module=current_ram
+[GIN] 2017/11/06 - 22:02:05 | 200 [0m|   38.308138ms |       127.0.0.1 |  GET [0m    /server?module=io_stats
+[GIN] 2017/11/06 - 22:02:05 | 200 [0m|   57.936826ms |       127.0.0.1 |  GET [0m    /server?module=swap
+[GIN] 2017/11/06 - 22:02:05 | 200 [0m|   69.231186ms |       127.0.0.1 |  GET [0m    /server?module=disk_partitions
+[GIN] 2017/11/06 - 22:02:05 | 200 [0m|     384.408µs |       127.0.0.1 |  GET [0m    /server?module=load_avg
+[GIN] 2017/11/06 - 22:02:05 | 200 [0m|  117.775884ms |       127.0.0.1 |  GET [0m    /server?module=ram_intensive_processes
+[GIN] 2017/11/06 - 22:02:05 | 200 [0m|  114.303768ms |       127.0.0.1 |  GET [0m    /server?module=cpu_intensive_processes
+[GIN] 2017/11/06 - 22:02:06 | 200 [0m|     401.067µs |       127.0.0.1 |  GET [0m    /server?module=load_avg
+[GIN] 2017/11/06 - 22:02:06 | 200 [0m|     544.889µs |       127.0.0.1 |  GET [0m    /server?module=current_ram
+[GIN] 2017/11/06 - 22:02:06 | 200 [0m|     209.121µs |       127.0.0.1 |  GET [0m    /webshell
+&{0xc420383860}
+[1m[7m%[27m[1m[0m                                                                                
+]7;file://monkey.fonsview.com/home/monkey/go/src/github.com/kikiyou/agent
+]2;monkey@monkey: ~/go/src/github.com/kikiyou/agent
+]1;..kikiyou/agent
+[0m[27m[24m[Jmonkey [01;32m➜  [36magent[00m [01;34mgit:([31mfsv[34m) [33m✗[00m [K
+[?1h=[?2004h
+l
+[GIN] 2017/11/06 - 22:02:08 | 200 [0m|  2.013166417s |       127.0.0.1 |  GET [0m    /server?module=cpu_utilization
+ls
+[?1l>
+[?2004l
+
+]2;ls --color=tty]1;ls
+[0m[38;5;40magent[0m               [38;5;33mcron[0m             middleware.auth.go  routes.go
+
+
+bindata_assetfs.go  [38;5;33mdb[0m               [38;5;33mmodels[0m              [38;5;33mshell[0m
+
+
+[38;5;40mbuild.sh[0m            [38;5;33mforms[0m            nohup.out           [38;5;33mstatic[0m
+
+
+cfg.json            [38;5;33mg[0m                NOTICE              [38;5;33mtemplates[0m
+
+
+[38;5;33mcollector[0m           inputwrapper.go  ping_hosts          websocketwriter.go
+
+
+[38;5;40mcontrol[0m             LICENSE          [38;5;33mpublic[0m              请求与响应地址.md
+
+
+[38;5;33mcontrollers[0m         main.go          README.md
+
+[1m[7m%[27m[1m[0m                                                                                
+]7;file://monkey.fonsview.com/home/monkey/go/src/github.com/kikiyou/agent
+]2;monkey@monkey: ~/go/src/github.com/kikiyou/agent]1;..kikiyou/agent
+[0m[27m[24m[Jmonkey [01;32m➜  [36magent[00m [01;34mgit:([31mfsv[34m) [33m✗[00m 
+[K[?1h=
+[?2004h

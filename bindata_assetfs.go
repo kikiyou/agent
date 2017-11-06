@@ -1643,7 +1643,7 @@ func staticWebshellAttachJs() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "static/webshell/attach.js", size: 4050, mode: os.FileMode(420), modTime: time.Unix(1509934096, 0)}
+	info := bindataFileInfo{name: "static/webshell/attach.js", size: 4050, mode: os.FileMode(436), modTime: time.Unix(1509958880, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -1663,7 +1663,7 @@ func staticWebshellFitJs() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "static/webshell/fit.js", size: 2986, mode: os.FileMode(420), modTime: time.Unix(1509934096, 0)}
+	info := bindataFileInfo{name: "static/webshell/fit.js", size: 2986, mode: os.FileMode(436), modTime: time.Unix(1509958880, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -1683,7 +1683,7 @@ func staticWebshellIndexHtml() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "static/webshell/index.html", size: 3807, mode: os.FileMode(420), modTime: time.Unix(1509939482, 0)}
+	info := bindataFileInfo{name: "static/webshell/index.html", size: 3807, mode: os.FileMode(436), modTime: time.Unix(1509958880, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -1703,7 +1703,7 @@ func staticWebshellStyleCss() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "static/webshell/style.css", size: 560, mode: os.FileMode(420), modTime: time.Unix(1509934096, 0)}
+	info := bindataFileInfo{name: "static/webshell/style.css", size: 560, mode: os.FileMode(436), modTime: time.Unix(1509958880, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -1723,7 +1723,7 @@ func staticWebshellXtermCss() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "static/webshell/xterm.css", size: 32777, mode: os.FileMode(420), modTime: time.Unix(1509934096, 0)}
+	info := bindataFileInfo{name: "static/webshell/xterm.css", size: 32777, mode: os.FileMode(436), modTime: time.Unix(1509958880, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -1743,7 +1743,7 @@ func staticWebshellXtermJs() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "static/webshell/xterm.js", size: 155341, mode: os.FileMode(420), modTime: time.Unix(1509934096, 0)}
+	info := bindataFileInfo{name: "static/webshell/xterm.js", size: 155341, mode: os.FileMode(436), modTime: time.Unix(1509958880, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }

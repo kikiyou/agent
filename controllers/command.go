@@ -2,7 +2,6 @@ package controllers
 
 import (
 	"bytes"
-	"fmt"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -12,9 +11,6 @@ import (
 )
 
 type CommandController struct{}
-
-// var CacheTTL g.CacheTTL
-// var CommandsModel = new(models.COMMANDS)
 
 func (ctrl CommandController) Command(c *gin.Context) {
 	var (
@@ -43,24 +39,6 @@ func (ctrl CommandController) Command(c *gin.Context) {
 				path = r
 			}
 			cmd = command
-		}
-		if commandID, ok := c.GetPostForm("commandID"); ok {
-			fmt.Println(commandID)
-			// //查询数据
-			// intCommandID, _ := g.StrToInt64(commandID)
-			// if err != nil {
-			// 	return
-			// }
-			// comand, err := CommandsModel.GetCommandAndIsDynamicByID(intCommandID)
-			// // db, err := sql.Open("sqlite3", "db/command_set.sqlite3")
-			// if err != nil {
-			// 	return
-			// }
-			// // cc := CommandsModel.AddCommand("ss", "monkey22")
-			// // cc := CommandsModel.DeleteCommand(intCommandID)
-			// // fmt.Println(cc)
-			// cmd = comand.COMMAND
-
 		}
 		if cmd != "" {
 			// g.AppConfig.Shell = "sh"

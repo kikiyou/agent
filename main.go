@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"html/template"
 	"io/ioutil"
 	"log"
@@ -11,7 +10,6 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/kikiyou/agent/collector"
-	// "github.com/kikiyou/agent/db"
 	"github.com/kikiyou/agent/g"
 	"github.com/kikiyou/agent/shell"
 	"github.com/kikiyou/agent/templates"
@@ -38,17 +36,13 @@ func loadCollectors(appConfig g.Config) (map[string]collector.Collector, error) 
 	return collectors, nil
 }
 
+// func tadd(t *template.Template, files ...string) {
+
+// }
 func main() {
 	// Set Gin to production mode
 	// gin.SetMode(gin.ReleaseMode)
-	// token := g.GetTokenStr()
-	// cc := g.GenerateToken()
-	// err := bcrypt.CompareHashAndPassword([]byte(cc), []byte(token))
-	// if err != nil {
-	// 	panic(err)
-	// }
-	// db.Init()
-	fmt.Println(g.AppConfig)
+
 	collectors, err := loadCollectors(g.AppConfig)
 	if err != nil {
 		log.Fatalf("Couldn't load config and collectors: %s", err)
@@ -61,35 +55,35 @@ func main() {
 	g.Collectors = collectors
 
 	// from the disk again. This makes serving HTML pages very fast.
-	bytes, err := templates.Asset("templates/webshell.html") // 根据地址获取对应内容
+	bytes, err := templates.Asset("templates/webshell.tmpl") // 根据地址获取对应内容
 	if err != nil {
 		log.Println(err)
 		// return
 	}
 	t, err := template.New("webshell.html").Parse(string(bytes)) // 比如用于模板处理
 
-	bytes, err = templates.Asset("templates/dash.html") // 根据地址获取对应内容
+	bytes, err = templates.Asset("templates/dash.tmpl") // 根据地址获取对应内容
 	if err != nil {
 		log.Println(err)
 		// return
 	}
 	t, err = t.New("dash.html").Parse(string(bytes)) // 比如用于模板处理
 
-	bytes, err = templates.Asset("templates/command.html") // 根据地址获取对应内容
-	if err != nil {
-		log.Println(err)
-		// return
-	}
-	t, err = t.New("command.html").Parse(string(bytes))
+	// bytes, err = templates.Asset("templates/command.html") // 根据地址获取对应内容
+	// if err != nil {
+	// 	log.Println(err)
+	// 	// return
+	// }
+	// t, err = t.New("command.html").Parse(string(bytes))
 
-	bytes, err = templates.Asset("templates/upload.html") // 根据地址获取对应内容
+	bytes, err = templates.Asset("templates/upload.tmpl") // 根据地址获取对应内容
 	if err != nil {
 		log.Println(err)
 		// return
 	}
 	t, err = t.New("upload.html").Parse(string(bytes))
 
-	bytes, err = templates.Asset("templates/login.html") // 根据地址获取对应内容
+	bytes, err = templates.Asset("templates/login.tmpl") // 根据地址获取对应内容
 	if err != nil {
 		log.Println(err)
 		// return
@@ -114,7 +108,7 @@ func main() {
 	router.StaticFS("/static", assetFS())
 
 	// 添加测试模板
-	// router.LoadHTMLFiles("templates/dash.html", "templates/upload.html", "templates/login.html", "templates/command.html", "templates/webshell.html")
+	// router.LoadHTMLFiles("templates/dash.html", "templates/upload.html", "templates/login.html", "templates/webshell.html")
 	// router.LoadHTMLGlob("./templates/*")
 	// router.Static("/static", "./static")
 

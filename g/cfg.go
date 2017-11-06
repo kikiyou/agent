@@ -36,6 +36,7 @@ type Config struct {
 	Collectors        map[string]collector.Collector
 	Secret            string
 	CacheTTL          *cacheGo.Cache
+	WebShell          string
 }
 
 func getConfig() (appConfig Config, err error) {
@@ -51,6 +52,7 @@ func getConfig() (appConfig Config, err error) {
 		printCollectors   = flag.Bool("printCollectors", false, "If true, print available collectors and exit")
 		cache             = flag.Int("cache", 2, "设定cache默认是:2")
 		secret            = flag.String("secret", "secret", "随机token加密因子")
+		webshell          = flag.String("webshell", "/bin/bash", "webshell默认绑定的shell")
 	)
 	flag.Parse()
 
@@ -98,6 +100,7 @@ func getConfig() (appConfig Config, err error) {
 		CacheTTL = cacheGo.New(5*time.Minute, 10*time.Minute)
 	}
 	appConfig.CacheTTL = CacheTTL
+	appConfig.WebShell = *webshell
 	// appConfig.DefaultShOpt = "-c"
 	// var c Config
 	// lock.Lock()
