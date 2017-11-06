@@ -4,15 +4,20 @@ package main
 
 import (
 	"fmt"
+	"io"
 	"log"
 	"net/http"
+	"os/exec"
 	"path/filepath"
+
+	"golang.org/x/net/websocket"
 
 	"github.com/gin-gonic/contrib/sessions"
 	"github.com/gin-gonic/gin"
 	"github.com/kikiyou/agent/controllers"
 	"github.com/kikiyou/agent/g"
 	"github.com/kikiyou/agent/models"
+	"github.com/kr/pty"
 	// _ "github.com/mattn/go-sqlite3"
 )
 
@@ -35,6 +40,55 @@ func CORSMiddleware() gin.HandlerFunc {
 			c.Next()
 		}
 	}
+}
+
+// webshell
+
+type Handler struct {
+	fileServer http.Handler
+}
+
+// GET /shell handler
+// Launches /bin/bash and starts serving it via the terminal
+func onShell(w http.ResponseWriter, r *http.Request) {
+	wsHandler := func(ws *websocket.Conn) {
+		// wrap the websocket into UTF-8 wrappers:
+		wrapper := NewWebSockWrapper(ws, WebSocketTextMode)
+		stdout := wrapper
+		stderr := wrapper
+
+		// this one is optional (solves some weird issues with vim running under shell)
+		stdin := &InputWrapper{ws}
+
+		// starts new command in a newly allocated terminal:
+		// TODO: replace /bin/bash with:
+		//		 kubectl exec -ti <pod> --container <container name> -- /bin/bash
+		cmd := exec.Command("/usr/bin/bash")
+		tty, err := pty.Start(cmd)
+		fmt.Println(tty)
+		if err != nil {
+			panic(err)
+		}
+		defer tty.Close()
+
+		// pipe to/fro websocket to the TTY:
+		go func() {
+			io.Copy(stdout, tty)
+		}()
+		go func() {
+			io.Copy(stderr, tty)
+		}()
+		go func() {
+			io.Copy(tty, stdin)
+		}()
+
+		// wait for the command to exit, then close the websocket
+		cmd.Wait()
+	}
+	defer log.Printf("Websocket session closed for %v", r.RemoteAddr)
+
+	// start the websocket session:
+	websocket.Handler(wsHandler).ServeHTTP(w, r)
 }
 
 func initializeRoutes() {
@@ -115,5 +169,24 @@ func initializeRoutes() {
 
 	//设置了个2s的容错cache 两秒内同一个命令，只输出一次的结果
 	router.POST("/command", command.Command)
+
+	// web shell
+	webShellUri := g.GenerateToken()
+	router.GET("/webshell", ensureLoggedIn(), func(c *gin.Context) {
+
+		session := sessions.Default(c)
+		user_name := session.Get("user_name")
+		user_nameStr, _ := user_name.(string)
+		var cli bool
+		if user_name == "admin" {
+			cli = true
+		}
+		g.Render(c, gin.H{"cli": cli, "user_name": user_nameStr, "webShellUri": webShellUri}, "webshell.html")
+	})
+	router.GET(webShellUri, func(c *gin.Context) {
+		log.Println("webshell用户进入")
+		onShell(c.Writer, c.Request)
+		// return
+	})
 
 }

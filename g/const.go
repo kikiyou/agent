@@ -16,7 +16,7 @@ package g
 // )
 
 // VERSION - version
-const VERSION = "0.0.3.1"
+const VERSION = "0.0.4"
 
 // shBasicAuthVar - name of env var for basic auth credentials
 const BasicAuthVar = "BASIC_AUTH"
