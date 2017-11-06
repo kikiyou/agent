@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="cn">
+
+<head>
+    <link href="static/css/font-awesome.min.css" rel="stylesheet">
+    <title>❯ 烽视威Agent</title>
+    <style>
+        body {
+            font-family: sans-serif;
+        }
+        
+        li {
+            list-style-type: none;
+        }
+        
+        li:before {
+            content: "❯";
+            padding-right: 5px;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>烽视威Agent</h1>
+    <ul>
+        <li><a href="/dash">/dash</a> <span style="color: #888">- 实时监控<span></li>
+        <li><a href="/upload">/upload</a> <span style="color: #888">- 多文件上传<span></li>
+        <li><a href="/public">/public</a> <span style="color: #888">- 文件下载<span></li>
+        <li><a href="/cli">/cli</a> <span style="color: #888">- 网页终端<span></li> 
+    </ul>
+</body>
+
+</html>

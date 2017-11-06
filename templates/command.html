@@ -26,9 +26,11 @@
                         <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">常用命令集 <span class="caret"></span></a>
                         <ul id="listCommandSet" class="dropdown-menu">
                             <!-- ?php require_once('listCommandSet.php'); ?-->
+                            {{ if .CommandList }} {{ range .CommandList }}
                             <li>
-                                <a data-command-id="4">列出缓存</a>
+                                <a data-command-id="{{ .ID }}">{{ .LABEL }}</a>
                             </li>
+                            {{end}} {{end}}
                         </ul>
                     </li>
                 </ul>
@@ -43,9 +45,10 @@
                             <input id="path" name="path" type="text" class="form-control input-sm" size="20" value="{{.defaultPath}}"> {{end}}
                             <span>.  .</span>
                             <b>
-                            <input id="command" name="command" type="text" size="60" class="form-control" placeholder="请在这里输入Shell命令来运行">
+                            <input id="command" name="command" type="text" size="50" class="form-control" placeholder="请在这里输入Shell命令来运行">
                         </b>
-                            <input id="html" name="html" value="1" hidden="true">
+                            <input id="html" name="html" value="1" hidden="true"> {{if .token}}
+                            <input id="token" name="token" value="{{.token}}" hidden="true"> {{end}}
                             <!-- div class="checkbox navbar-btn">
                             <label class="navbar-link">
                                 <input type="checkbox" name="oneTimeCommandIsDynamic">
@@ -209,7 +212,7 @@
 
                 $.ajax({
                     url: "command",
-                    data: "commandID=" + commandID + "&html=1",
+                    data: "commandID=" + commandID + "&html=1" + "&token={{.token}}",
                     type: "POST",
                     success: function(data) {
                         // If the command is successful, update the terminal div

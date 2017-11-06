@@ -1,0 +1,31 @@
+package g
+
+// changelog:
+// 3.1.3: code refactor
+// 3.1.4: bugfix ignore configuration
+// 5.0.0: 支持通过配置控制是否开启/run接口；收集udp流量数据；du某个目录的大小
+// 5.1.0: 同步插件的时候不再使用checksum机制
+// 5.1.1: 修复往多个transfer发送数据的时候crash的问题
+// const (
+// 	VERSION          = "5.1.1"
+// 	COLLECT_INTERVAL = time.Second
+// 	URL_CHECK_HEALTH = "url.check.health"
+// 	NET_PORT_LISTEN  = "net.port.listen"
+// 	DU_BS            = "du.bs"
+// 	PROC_NUM         = "proc.num"
+// )
+
+// VERSION - version
+const VERSION = "0.0.3.1"
+
+// shBasicAuthVar - name of env var for basic auth credentials
+const BasicAuthVar = "BASIC_AUTH"
+
+// defaultShellPOSIX - shell executable by default in POSIX systems
+const defaultShellPOSIX = "sh"
+
+// defaultShellWindows - shell executable by default in Windows
+const defaultShellWindows = "cmd"
+
+// defaultShellPlan9 - shell executable by default in Plan9
+const defaultShellPlan9 = "rc"
