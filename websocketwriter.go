@@ -53,7 +53,7 @@ func NewWebSockWrapper(ws *websocket.Conn, m WebSocketMode) *WebSockWrapper {
 //
 // It replaces raw Write() with "Message.Send()"
 func (w *WebSockWrapper) Write(data []byte) (n int, err error) {
-	fmt.Println(string(data))
+	// fmt.Println(string(data))
 	n = len(data)
 	if w.mode == WebSocketBinaryMode {
 		// binary send:
